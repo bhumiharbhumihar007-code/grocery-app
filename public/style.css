@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+h1, h2 {
+  background: #2ecc71;
+  color: white;
+  padding: 10px;
+}
+
+form {
+  margin: 20px auto;
+  width: 250px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+}
+
+button {
+  padding: 8px 15px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #219150;
+}
+
+#products div {
+  background: white;
+  margin: 10px auto;
+  padding: 10px;
+  width: 250px;
+  box-shadow: 0 0 5px gray;
+}

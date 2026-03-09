@@ -1,36 +1,37 @@
-function login() {
-  const pass = document.getElementById("password").value;
+// admin.js
+const productForm = document.getElementById('product-form');
 
-  if (pass === "admin123") {
-    document.getElementById("login").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-    loadData();
-  } else {
-    alert("Wrong Password ❌");
-  }
-}
+productForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-async function loadData() {
-  const res = await fetch("/adminData");
-  const data = await res.json();
+    // Get data from form fields
+    const productData = {
+        name: document.getElementById('name').value,
+        price: document.getElementById('price').value,
+        category: document.getElementById('category').value,
+        image: document.getElementById('image').value,
+        description: document.getElementById('desc').value
+    };
 
-  document.getElementById("users").innerHTML =
-    data.users.map(u => `
-      <div>
-        Name: ${u.name} <br>
-        Email: ${u.email} <br>
-        Password: ${u.password}
-        <hr>
-      </div>
-    `).join('');
+    const token = localStorage.getItem('token'); // Get token from login
 
-  document.getElementById("orders").innerHTML =
-    data.orders.map(o => `
-      <div>
-        User: ${o.userName} <br>
-        Total: ₹${o.total} <br>
-        Date: ${new Date(o.date).toLocaleString()}
-        <hr>
-      </div>
-    `).join('');
-}
+    try {
+        const response = await fetch('/api/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': `Bearer ${token}` // Assuming your middleware looks for this
+            },
+            body: JSON.stringify(productData)
+        });
+
+        if (response.ok) {
+            alert('Product added successfully!');
+            productForm.reset();
+        } else {
+            alert('Failed to add product. Are you logged in as admin?');
+        }
+    } catch (err) {
+        console.error("Error adding product:", err);
+    }
+});

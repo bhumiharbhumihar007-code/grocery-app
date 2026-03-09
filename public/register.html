@@ -2,46 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Join FreshMart | Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart | Join Us</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body>
-    <div class="bg-green-500 text-white p-4 rounded-lg">
-register
-</div>
-    <div class="auth-wrapper">
-        <div class="form-container">
-            <h2>Create Account</h2>
-            <form id="register-form">
-                <input type="text" id="regName" placeholder="Full Name" required>
-                <input type="email" id="regEmail" placeholder="Email Address" required>
-                <input type="password" id="regPass" placeholder="Password" required>
-                <button type="submit" class="btn-submit">Register Now</button>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        
+        <div class="h-2 bg-green-500"></div>
+
+        <div class="p-8 md:p-10">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-black italic tracking-tighter text-green-600">
+                    Fresh<span class="text-gray-800">Mart</span>
+                </h1>
+                <div class="mt-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
+                    <p class="text-gray-500 mt-1">Join our community of fresh eaters!</p>
+                </div>
+            </div>
+
+            <form id="register-form" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-sm font-semibold text-gray-600 ml-1">Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-semibold text-gray-600 ml-1">Email Address</label>
+                    <input type="email" id="regEmail" placeholder="name@example.com" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-semibold text-gray-600 ml-1">Password</label>
+                    <input type="password" id="regPass" placeholder="Create a strong password" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" required>
+                </div>
+
+                <div class="flex items-center space-x-2 px-1 py-2">
+                    <input type="checkbox" id="terms" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" required>
+                    <label for="terms" class="text-xs text-gray-500">I agree to the <a href="#" class="text-green-600 underline">Terms & Conditions</a></label>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-green-100 transition-all active:scale-[0.98] mt-2">
+                    Register Now
+                </button>
             </form>
-            <p>Already a member? <a href="login.html">Login</a></p>
+
+            <div class="mt-8 text-center">
+                <p class="text-gray-600">
+                    Already a member? <a href="login.html" class="text-green-600 font-bold hover:underline">Login here</a>
+                </p>
+            </div>
         </div>
     </div>
 
     <script>
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerText;
+            
+            // Visual feedback
+            submitBtn.innerText = "Creating Account...";
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
             const userData = {
                 name: document.getElementById('regName').value,
                 email: document.getElementById('regEmail').value,
                 password: document.getElementById('regPass').value
             };
 
-            const res = await fetch('/register', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(userData)
-            });
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(userData)
+                });
 
-            if(res.ok) {
-                alert("Account Created! Please Login.");
-                window.location.href = "login.html";
-            } else {
-                alert("Registration Failed.");
+                if(res.ok) {
+                    alert("Account Created Successfully! Welcome to FreshMart.");
+                    window.location.href = "login.html";
+                } else {
+                    const errorData = await res.json();
+                    alert(errorData.error || "Registration Failed. Please try again.");
+                    resetButton();
+                }
+            } catch (err) {
+                console.error("Reg Error:", err);
+                alert("Could not connect to the server.");
+                resetButton();
+            }
+
+            function resetButton() {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         });
     </script>

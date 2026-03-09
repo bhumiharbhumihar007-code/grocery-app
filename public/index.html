@@ -1,23 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Grocery Store</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart | Online Grocery Store</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<h1>🛒 Grocery Store</h1>
+    <nav>
+        <div class="logo">Fresh<span>Mart</span></div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="login.html" id="login-link">Login</a>
+            <span id="user-display" style="display:none; color: var(--primary);"></span>
+            <div class="cart-icon" onclick="window.location.href='checkout.html'">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count">0</span>
+            </div>
+        </div>
+    </nav>
 
-<div id="products"></div>
+    <header class="hero">
+        <h1>Fresh Groceries, Delivered Fast</h1>
+        <p>Eat healthy, stay fresh with FreshMart.</p>
+    </header>
 
-<h3>Total: ₹<span id="total">0</span></h3>
+    <main class="container">
+        <h2 class="section-title">Our Products</h2>
+        <div id="product-display" class="product-grid">
+            </div>
+    </main>
 
-<button onclick="checkout()">Pay Now</button>
-
-<br><br>
-<a href="admin.html">Go to Admin Panel</a>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>

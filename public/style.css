@@ -248,6 +248,49 @@ th, td {
     grid-template-columns: 1fr;
     gap: 20px;
 }
+/* --- EXTRA UTILITIES --- */
+
+/* Admin Password Overlay */
+.admin-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(44, 62, 80, 0.95);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000; color: white; text-align: center;
+}
+
+.lock-box {
+    background: var(--white);
+    padding: 30px;
+    border-radius: var(--radius);
+    color: var(--text-main);
+    width: 300px;
+}
+
+/* Status Tags for Orders */
+.status-pending {
+    background: #fff3cd; color: #856404;
+    padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;
+}
+
+/* Admin Sidebar active links */
+.sidebar a {
+    display: block; color: #bdc3c7;
+    padding: 12px; text-decoration: none;
+    margin-bottom: 5px; border-radius: 5px;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background: var(--primary); color: white;
+}
+
+/* Sales Chart Container */
+#salesChart {
+    width: 100%; height: 300px;
+    background: white; border-radius: var(--radius);
+    margin-top: 20px; padding: 10px;
+    box-shadow: var(--shadow);
+}
 
 /* Mobile Responsive */
 @media (max-width: 768px) {

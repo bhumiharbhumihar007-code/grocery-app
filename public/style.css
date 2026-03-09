@@ -1,44 +1,256 @@
+/* ==========================================
+   FRESHMART PROFESSIONAL STYLESHEET
+   ========================================== */
+
+:root {
+    --primary: #27ae60;      /* Fresh Green */
+    --primary-dark: #219150;
+    --secondary: #2c3e50;    /* Dark Navy */
+    --accent: #e67e22;       /* Admin Orange */
+    --danger: #e74c3c;       /* Delete Red */
+    --light-bg: #f4f7f6;
+    --white: #ffffff;
+    --text-main: #333;
+    --text-muted: #777;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    --radius: 10px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
-  text-align: center;
+    background-color: var(--light-bg);
+    color: var(--text-main);
+    line-height: 1.6;
 }
 
-h1, h2 {
-  background: #2ecc71;
-  color: white;
-  padding: 10px;
+/* --- NAVIGATION --- */
+nav {
+    background: var(--white);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-form {
-  margin: 20px auto;
-  width: 250px;
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary);
 }
 
-input {
-  width: 100%;
-  padding: 8px;
-  margin: 5px 0;
+.logo span {
+    color: var(--primary);
 }
 
-button {
-  padding: 8px 15px;
-  background: #27ae60;
-  color: white;
-  border: none;
-  cursor: pointer;
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-button:hover {
-  background: #219150;
+.nav-links a {
+    text-decoration: none;
+    color: var(--secondary);
+    font-weight: 500;
+    transition: 0.3s;
 }
 
-#products div {
-  background: white;
-  margin: 10px auto;
-  padding: 10px;
-  width: 250px;
-  box-shadow: 0 0 5px gray;
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+.cart-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+#cart-count {
+    background: var(--danger);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
+
+/* --- HERO SECTION (Index) --- */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1300&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* --- PRODUCT GRID --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.product-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: 0.3s;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.price {
+    font-size: 1.2rem;
+    color: var(--primary);
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.btn-add {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+}
+
+/* --- AUTH PAGES (Login/Register) --- */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.form-container {
+    background: var(--white);
+    padding: 40px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.btn-submit {
+    background: var(--primary);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* --- ADMIN PANEL SPECIFIC --- */
+.admin-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background: var(--secondary);
+    color: white;
+    padding: 20px;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.btn-delete {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* --- CHECKOUT SPECIFIC --- */
+.checkout-container {
+    max-width: 800px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .admin-grid { grid-template-columns: 1fr; }
+    .nav-links { font-size: 0.9rem; }
 }

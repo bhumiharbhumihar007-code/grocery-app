@@ -1,125 +1,148 @@
-<!DOCTYPE html>
+!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | FreshMart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="admin-body">
-    <div class="bg-green-500 text-white p-4 rounded-lg">
-Admin Dashboard
-    </div>
+<body class="bg-gray-50 font-sans antialiased">
 
-    <div class="admin-grid">
-        <aside class="sidebar">
-            <div class="logo">Fresh<span>Mart</span> Admin</div>
-            <nav class="admin-nav">
-                <a href="#stats" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a href="#inventory"><i class="fas fa-boxes"></i> Inventory</a>
-                <a href="#orders"><i class="fas fa-shopping-bag"></i> Orders</a>
-                <a href="index.html"><i class="fas fa-eye"></i> View Site</a>
-                <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="flex min-h-screen">
+        
+        <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
+            <div class="p-6 text-2xl font-bold border-b border-slate-800">
+                <span class="text-green-500">Fresh</span>Mart <span class="text-sm font-light text-slate-400">Admin</span>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#stats" class="flex items-center space-x-3 p-3 rounded-lg bg-green-600 text-white">
+                    <i class="fas fa-chart-line w-5"></i> <span>Dashboard</span>
+                </a>
+                <a href="#inventory" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fas fa-boxes w-5"></i> <span>Inventory</span>
+                </a>
+                <a href="#orders" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fas fa-shopping-bag w-5"></i> <span>Orders</span>
+                </a>
+                <a href="index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition border-t border-slate-800 mt-4">
+                    <i class="fas fa-eye w-5"></i> <span>View Site</span>
+                </a>
             </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 bg-red-500/10 text-red-500 p-3 rounded-lg hover:bg-red-500 hover:text-white transition">
+                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                </button>
+            </div>
         </aside>
 
-        <main class="main-content">
-            <header class="admin-header">
-                <h2>Admin Dashboard</h2>
-                <div id="admin-name">Welcome, Admin</div>
+        <main class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
+                <h2 class="text-xl font-bold text-gray-800">Admin Control Center</h2>
+                <div id="admin-name" class="flex items-center space-x-2 text-gray-600 font-medium">
+                    <div class="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <span>Welcome, Admin</span>
+                </div>
             </header>
 
-            <section id="stats" class="stats-container">
-                <div class="stat-card">
-                    <i class="fas fa-users"></i>
-                    <div class="info">
-                        <h3>Total Users</h3>
-                        <h2 id="total-users">0</h2>
+            <div class="p-6 space-y-8">
+                <section id="stats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-4 bg-blue-50 text-blue-600 rounded-lg"><i class="fas fa-users text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase font-semibold">Total Users</p>
+                            <h2 id="total-users" class="text-2xl font-bold text-gray-800">0</h2>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-box"></i>
-                    <div class="info">
-                        <h3>Products</h3>
-                        <h2 id="total-products">0</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-4 bg-orange-50 text-orange-600 rounded-lg"><i class="fas fa-box text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase font-semibold">Products</p>
+                            <h2 id="total-products" class="text-2xl font-bold text-gray-800">0</h2>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-dollar-sign"></i>
-                    <div class="info">
-                        <h3>Total Revenue</h3>
-                        <h2 id="total-revenue">$0</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-4 bg-green-50 text-green-600 rounded-lg"><i class="fas fa-dollar-sign text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase font-semibold">Total Revenue</p>
+                            <h2 id="total-revenue" class="text-2xl font-bold text-gray-800">$0</h2>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section id="inventory" class="admin-section card">
-                <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
-                <form id="add-product-form">
-                    <div class="form-grid">
-                        <input type="text" id="pName" placeholder="Product Name" required>
-                        <input type="number" id="pPrice" placeholder="Price" required>
-                        <select id="pCategory">
-                            <option value="Vegetables">Vegetables</option>
-                            <option value="Fruits">Fruits</option>
-                            <option value="Dairy">Dairy</option>
-                            <option value="Bakery">Bakery</option>
-                        </select>
-                        <input type="text" id="pImage" placeholder="Image URL (e.g. https://...)" required>
+                <section id="inventory" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-700 flex items-center space-x-2">
+                        <i class="fas fa-plus-circle text-green-500"></i> <span>Add New Product</span>
                     </div>
-                    <textarea id="pDesc" placeholder="Product Description"></textarea>
-                    <button type="submit" class="btn-submit">Add Product to Store</button>
-                </form>
-            </section>
+                    <form id="add-product-form" class="p-6 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <input type="text" id="pName" placeholder="Product Name" class="border p-2 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" required>
+                            <input type="number" id="pPrice" placeholder="Price" class="border p-2 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" required>
+                            <select id="pCategory" class="border p-2 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white">
+                                <option value="Vegetables">Vegetables</option>
+                                <option value="Fruits">Fruits</option>
+                                <option value="Dairy">Dairy</option>
+                                <option value="Bakery">Bakery</option>
+                            </select>
+                            <input type="text" id="pImage" placeholder="Image URL" class="border p-2 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" required>
+                        </div>
+                        <textarea id="pDesc" placeholder="Product Description" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-green-500 outline-none h-24"></textarea>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold transition">Add Product to Store</button>
+                    </form>
+                </section>
 
-            <section class="admin-section card">
-                <h3>Current Inventory</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Category</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-table">
-                            </tbody>
-                    </table>
-                </div>
-            </section>
+                <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-700">Current Inventory</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                                    <th class="p-4">Image</th>
+                                    <th class="p-4">Name</th>
+                                    <th class="p-4">Price</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table" class="divide-y">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <section id="orders" class="admin-section card">
-                <h3>Recent Orders</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Address</th>
-                                <th>Items</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table">
-                            </tbody>
-                    </table>
-                </div>
-            </section>
+                <section id="orders" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-700">Recent Orders</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                                    <th class="p-4">Customer</th>
+                                    <th class="p-4">Address</th>
+                                    <th class="p-4">Items</th>
+                                    <th class="p-4">Total</th>
+                                    <th class="p-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table" class="divide-y">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
-    <div id="admin-lock" class="admin-overlay">
-        <div class="lock-box">
-            <i class="fas fa-lock fa-3x"></i>
-            <h2>Admin Access Required</h2>
-            <input type="password" id="admin-pass" placeholder="Enter Admin Password">
-            <button onclick="verifyAdmin()" class="btn-submit">Unlock</button>
+    <div id="admin-lock" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 px-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center space-y-6">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
+                <i class="fas fa-lock fa-3x"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">Admin Access Required</h2>
+            <input type="password" id="admin-pass" placeholder="Enter Admin Password" class="w-full border-2 p-3 rounded-xl focus:border-green-500 outline-none text-center text-lg tracking-widest">
+            <button onclick="verifyAdmin()" class="w-full bg-green-600 text-white p-3 rounded-xl font-bold hover:bg-green-700 transition">Unlock Dashboard</button>
         </div>
     </div>
 

@@ -1,50 +1,27 @@
-let cart = [];
+// script.js
+async function fetchProducts() {
+    try {
+        const res = await fetch('/api/products'); // Your backend route
+        const products = await res.json();
+        
+        const container = document.getElementById('product-container');
+        container.innerHTML = ''; // Clear loading text
 
-async function loadProducts() {
-  const res = await fetch("/products");
-  const products = await res.json();
-  const container = document.getElementById("products");
-
-  container.innerHTML = products.map(p => `
-    <div>
-      <h3>${p.name}</h3>
-      <p>₹${p.price}</p>
-      <button onclick='addToCart(${JSON.stringify(p)})'>
-        Add to Cart
-      </button>
-    </div>
-  `).join('');
+        products.forEach(product => {
+            const card = `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p>$${product.price}</p>
+                    <button onclick="addToCart('${product._id}')">Add to Cart</button>
+                </div>
+            `;
+            container.innerHTML += card;
+        });
+    } catch (err) {
+        console.error("Could not load products", err);
+    }
 }
 
-function addToCart(product) {
-  cart.push(product);
-  updateTotal();
-}
-
-function updateTotal() {
-  let total = 0;
-  cart.forEach(item => total += item.price);
-  document.getElementById("total").innerText = total;
-}
-
-async function checkout() {
-  let total = 0;
-  cart.forEach(item => total += item.price);
-
-  await fetch("/order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      items: cart,
-      total: total
-    })
-  });
-
-  alert("Payment Successful ✅");
-  cart = [];
-  updateTotal();
-}
-
-loadProducts();
+// Call this when page loads
+window.onload = fetchProducts;

@@ -1,18 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart | Login</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  
-<h2>Login</h2>
-<form action="/login" method="POST">
-<input name="email" placeholder="Email"><br>
-<input type="password" name="password" placeholder="Password"><br>
-<button>Login</button>
-</form>
 
-<a href="register.html">Register</a>
+    <div class="auth-wrapper">
+        <div class="form-container">
+            <div class="logo" style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: var(--primary-green);">Fresh<span>Mart</span></h1>
+            </div>
+            
+            <h2>Welcome Back</h2>
+            <p style="color: #666; margin-bottom: 20px;">Login to manage your orders</p>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="email" id="logEmail" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="logPass" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-submit">Sign In</button>
+            </form>
+
+            <div class="auth-links">
+                <p>New user? <a href="register.html">Create an account</a></p>
+                
+                <div class="admin-access">
+                    <p>Are you an Admin? <a href="admin.html" class="admin-btn">Admin Portal</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login Logic
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('logEmail').value;
+            const password = document.getElementById('logPass').value;
+
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Success: Save user info and redirect
+                    localStorage.setItem("userName", data.userName);
+                    localStorage.setItem("userEmail", data.userEmail);
+                    alert("Login Successful! Welcome " + data.userName);
+                    window.location.href = "index.html";
+                } else {
+                    alert(data.error || "Invalid login credentials");
+                }
+            } catch (err) {
+                console.error("Login Error:", err);
+                alert("Server connection failed!");
+            }
+        });
+    </script>
+
 </body>
 </html>

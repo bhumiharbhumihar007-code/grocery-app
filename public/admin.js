@@ -1,37 +1,72 @@
 // admin.js
-const productForm = document.getElementById('product-form');
 
-productForm.addEventListener('submit', async (e) => {
+// 1. Password Check
+function checkLogin() {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === "admin123") { // Aap apna password yahan set karein
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadAdminData();
+    } else {
+        alert("Wrong Password!");
+    }
+}
+
+// 2. Fetch Data from Server
+async function loadAdminData() {
+    try {
+        const response = await fetch('/adminData');
+        const data = await response.json();
+
+        // Update Stats
+        document.getElementById('userCount').innerText = data.users.length;
+        document.getElementById('orderCount').innerText = data.orders.length;
+        
+        let revenue = data.orders.reduce((sum, order) => sum + order.total, 0);
+        document.getElementById('totalRevenue').innerText = "$" + revenue.toFixed(2);
+
+        // Render Orders Table
+        const orderTable = document.getElementById('orderTableBody');
+        orderTable.innerHTML = data.orders.map(order => `
+            <tr>
+                <td><b>${order.userName}</b></td>
+                <td>${order.items.map(i => i.name).join(", ")}</td>
+                <td>$${order.total}</td>
+                <td>${new Date(order.date).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
+
+        // Render User List
+        const userDiv = document.getElementById('userList');
+        userDiv.innerHTML = data.users.map(u => `
+            <p>📧 ${u.email} | 👤 ${u.name}</p>
+        `).join('');
+
+    } catch (err) {
+        console.error("Error loading data:", err);
+    }
+}
+
+// 3. Add New Product Logic
+document.getElementById('productForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Get data from form fields
     const productData = {
-        name: document.getElementById('name').value,
-        price: document.getElementById('price').value,
-        category: document.getElementById('category').value,
-        image: document.getElementById('image').value,
-        description: document.getElementById('desc').value
+        name: document.getElementById('pName').value,
+        price: document.getElementById('pPrice').value,
+        image: document.getElementById('pImg').value,
+        category: document.getElementById('pCat').value
     };
 
-    const token = localStorage.getItem('token'); // Get token from login
+    const res = await fetch('/addProduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData)
+    });
 
-    try {
-        const response = await fetch('/api/products', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'token': `Bearer ${token}` // Assuming your middleware looks for this
-            },
-            body: JSON.stringify(productData)
-        });
-
-        if (response.ok) {
-            alert('Product added successfully!');
-            productForm.reset();
-        } else {
-            alert('Failed to add product. Are you logged in as admin?');
-        }
-    } catch (err) {
-        console.error("Error adding product:", err);
+    if (res.ok) {
+        alert("Product Added Successfully!");
+        document.getElementById('productForm').reset();
+        loadAdminData(); // Refresh UI
     }
 });

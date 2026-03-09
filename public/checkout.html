@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FreshMart | Checkout</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-container { max-width: 600px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .order-summary { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .btn-order { background: #27ae60; color: white; width: 100%; padding: 15px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <h2>🚚 Delivery Details</h2>
+    <div class="order-summary">
+        <h3>Order Total: <span id="checkout-total">$0</span></h3>
+    </div>
+
+    <form id="checkout-form">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="custName" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="custEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="custPhone" placeholder="9876543210" required>
+        </div>
+        <div class="form-group">
+            <label>Delivery Address</label>
+            <textarea id="custAddress" rows="3" placeholder="House No, Street, City" required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-order">Place Order (Cash on Delivery)</button>
+    </form>
+</div>
+
+<script src="checkout.js"></script>
+</body>
+</html>

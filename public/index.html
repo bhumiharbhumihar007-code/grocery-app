@@ -4,37 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FreshMart | Online Grocery Store</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth scrolling for anchor links */
+        html { scroll-behavior: smooth; }
+    </style>
 </head>
-<body>
-<div class="bg-green-500 text-white p-4 rounded-lg">
-Admin Dashboard
-</div>
-    <nav>
-        <div class="logo">Fresh<span>Mart</span></div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="login.html" id="login-link">Login</a>
-            <span id="user-display" style="display:none; color: var(--primary);"></span>
-            <div class="cart-icon" onclick="window.location.href='checkout.html'">
-                <i class="fas fa-shopping-cart"></i>
-                <span id="cart-count">0</span>
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.location.href='index.html'">
+                    <span class="text-3xl font-black text-green-600 tracking-tighter italic">Fresh<span class="text-gray-800">Mart</span></span>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8 font-semibold">
+                    <a href="index.html" class="text-green-600 hover:text-green-700 transition">Home</a>
+                    <a href="#products" class="text-gray-600 hover:text-green-600 transition">Shop</a>
+                    <a href="login.html" id="login-link" class="text-gray-600 hover:text-green-600 transition">Login</a>
+                    <span id="user-display" class="hidden text-green-700 font-bold bg-green-50 px-3 py-1 rounded-full border border-green-200"></span>
+                </div>
+
+                <div class="relative group cursor-pointer" onclick="window.location.href='checkout.html'">
+                    <div class="p-3 rounded-full bg-gray-100 group-hover:bg-green-100 transition duration-300">
+                        <i class="fas fa-shopping-cart text-xl text-gray-700 group-hover:text-green-600"></i>
+                    </div>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ring-2 ring-white">0</span>
+                </div>
             </div>
         </div>
     </nav>
 
-    <header class="hero">
-        <h1>Fresh Groceries, Delivered Fast</h1>
-        <p>Eat healthy, stay fresh with FreshMart.</p>
+    <header class="relative bg-green-600 overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 opacity-10">
+            <i class="fas fa-leaf text-[300px] text-white transform rotate-45"></i>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-2xl text-white">
+                <h1 class="text-5xl md:text-6xl font-black mb-6 leading-tight">
+                    Fresh Groceries, <br>
+                    <span class="text-green-200 underline decoration-wavy decoration-2">Delivered Fast.</span>
+                </h1>
+                <p class="text-xl text-green-50 mb-10 leading-relaxed opacity-90">
+                    Eat healthy, stay fresh with FreshMart. We bring the farmer's market experience straight to your doorstep within 30 minutes.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#products" class="bg-white text-green-700 px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-green-50 transition transform hover:-translate-y-1">
+                        Start Shopping
+                    </a>
+                    <button class="border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition">
+                        Our Story
+                    </button>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-        <h2 class="section-title">Our Products</h2>
-        <div id="product-display" class="product-grid">
+    <main id="products" class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <h2 class="text-3xl font-black text-gray-800">Our Products</h2>
+                <div class="h-1.5 w-20 bg-green-500 mt-2 rounded-full"></div>
+            </div>
+            
+            <div class="flex space-x-2">
+                <button class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-bold shadow-md">All</button>
+                <button class="px-4 py-2 bg-white text-gray-600 hover:bg-green-50 rounded-lg text-sm font-bold border transition">Organic</button>
+                <button class="px-4 py-2 bg-white text-gray-600 hover:bg-green-50 rounded-lg text-sm font-bold border transition">Seasonal</button>
+            </div>
+        </div>
+
+        <div id="product-display" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             </div>
     </main>
+
+    <footer class="bg-white border-t border-gray-200 py-10 mt-20">
+        <div class="text-center">
+            <p class="text-gray-400 text-sm">© 2026 FreshMart Groceries. All Rights Reserved.</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>

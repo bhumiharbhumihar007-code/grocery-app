@@ -2,182 +2,90 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>MediCare Pharmacy | Checkout</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Checkout</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script>
 tailwind.config = {
-theme:{
-extend:{
-colors:{
-sand:"#F5F2ED",
-teal:"#004D4D",
-copper:"#B87333",
-sage:"#8A9A5B",
-charcoal:"#2B2B2B"
+theme: {
+extend: {
+colors: {
+sand: "#F5F2ED",
+tealMain: "#004D4D",
+copper: "#B87333",
+charcoal: "#2B2B2B"
 }
 }
 }
 }
 </script>
 
-<style>
-body{font-family:'Inter',sans-serif;}
-</style>
-
 </head>
 
-<body class="bg-sand min-h-screen flex items-center justify-center p-4 text-charcoal">
+<body class="bg-sand min-h-screen flex items-center justify-center">
 
-<div class="max-w-xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+<div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl">
 
-<!-- Header -->
-
-<div class="bg-teal p-6 text-white text-center">
-
-<h1 class="text-2xl font-bold flex items-center justify-center gap-2">
-
-<span>🚚</span> MediCare Checkout
-
+<h1 class="text-2xl font-bold text-tealMain mb-6">
+Checkout
 </h1>
 
-<p class="text-sand mt-1">
-Complete your order details below
-</p>
+
+<!-- CART ITEMS -->
+<div id="checkout-items" class="mb-6"></div>
+
+
+<!-- TOTAL -->
+<div class="flex justify-between text-xl font-bold mb-6">
+
+<span>Total</span>
+
+<span id="checkout-total" class="text-copper"></span>
 
 </div>
 
-<!-- Body -->
 
-<div class="p-8">
-
-<!-- Order Total -->
-
-<div class="bg-sand border border-gray-200 rounded-xl p-4 mb-8 flex justify-between items-center">
-
-<span class="font-semibold uppercase tracking-wider text-sm">
-Order Total
-</span>
-
-<span id="checkout-total" class="text-2xl font-black text-teal">
-₹0.00
-</span>
-
-</div>
-
-<form id="checkout-form" class="space-y-5">
-
-<!-- Name -->
-
-<div>
-
-<label class="block text-sm font-semibold mb-1">
-Full Name
-</label>
+<!-- FORM -->
+<form id="checkout-form" class="space-y-4">
 
 <input
-type="text"
 id="custName"
-placeholder="John Doe"
-class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal focus:border-teal outline-none transition"
-required>
-
-</div>
-
-<!-- Email + Phone -->
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-<div>
-
-<label class="block text-sm font-semibold mb-1">
-Email Address
-</label>
+placeholder="Full Name"
+required
+class="w-full border p-3 rounded"
+/>
 
 <input
-type="email"
 id="custEmail"
-placeholder="you@example.com"
-class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal focus:border-teal outline-none transition"
-required>
-
-</div>
-
-<div>
-
-<label class="block text-sm font-semibold mb-1">
-Phone Number
-</label>
+placeholder="Email"
+required
+class="w-full border p-3 rounded"
+/>
 
 <input
-type="tel"
 id="custPhone"
-placeholder="9876543210"
-class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal focus:border-teal outline-none transition"
-required>
-
-</div>
-
-</div>
-
-<!-- Address -->
-
-<div>
-
-<label class="block text-sm font-semibold mb-1">
-Delivery Address
-</label>
+placeholder="Phone"
+required
+class="w-full border p-3 rounded"
+/>
 
 <textarea
 id="custAddress"
-rows="3"
-placeholder="House No, Street Name, Landmark, City"
-class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal focus:border-teal outline-none transition resize-none"
-required></textarea>
-
-</div>
-
-<!-- COD Notice -->
-
-<div class="flex items-start gap-3 p-3 bg-sage/10 text-sage rounded-lg text-sm italic">
-
-<span class="text-lg">ℹ️</span>
-
-Currently we support **Cash on Delivery** only.  
-Please keep the amount ready for our delivery partner.
-
-</div>
-
-<!-- Button -->
+placeholder="Address"
+required
+class="w-full border p-3 rounded"
+></textarea>
 
 <button
 type="submit"
-class="w-full bg-copper hover:bg-sage text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+class="w-full bg-tealMain text-white py-3 rounded hover:opacity-90">
 
 Place Order
 
 </button>
 
 </form>
-
-<!-- Back to Cart -->
-
-<div class="mt-6 text-center">
-
-<a href="cart.html" class="text-sm text-gray-500 hover:text-teal underline transition">
-
-Return to Cart
-
-</a>
-
-</div>
-
-</div>
 
 </div>
 

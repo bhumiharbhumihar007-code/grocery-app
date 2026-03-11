@@ -1,99 +1,123 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = localStorage.getItem("cartTotal") || 0;
 
-const total = localStorage.getItem("cartTotal") || 0;
-
-const itemsContainer = document.getElementById("checkout-items");
-
-const totalDisplay = document.getElementById("checkout-total");
-
-
-// SHOW CART ITEMS
-
-itemsContainer.innerHTML = cart.length > 0
-? cart.map(item => `
-<div class="flex justify-between border-b py-2">
-<div>
-<p class="font-semibold">${item.name}</p>
-<p class="text-sm text-gray-500">
-Qty: ${item.quantity}
-</p>
-</div>
-
-<p class="text-copper font-semibold">
-₹${(item.price * item.quantity).toFixed(2)}
-</p>
-
-</div>
-`).join("")
-: `<p class="text-center text-gray-500">Cart is empty</p>`;
+    const itemsContainer = document.getElementById("checkout-items");
+    const totalDisplay = document.getElementById("checkout-total");
+    const form = document.getElementById("checkout-form");
 
 
-totalDisplay.innerText = "₹" + total;
+    /* ==========================
+       SHOW CART ITEMS
+    ========================== */
+
+    if (itemsContainer) {
+
+        if (cart.length === 0) {
+
+            itemsContainer.innerHTML =
+            `<p class="text-center text-gray-500">Your cart is empty</p>`;
+
+        } else {
+
+            itemsContainer.innerHTML = cart.map(item => `
+
+            <div class="flex justify-between items-center border-b py-3">
+
+                <div>
+                    <p class="font-semibold">${item.name}</p>
+
+                    <p class="text-sm text-gray-500">
+                    Qty: ${item.quantity}
+                    </p>
+                </div>
+
+                <p class="text-copper font-semibold">
+                ₹${(item.price * item.quantity).toFixed(2)}
+                </p>
+
+            </div>
+
+            `).join("");
+
+        }
+
+    }
 
 
-// FORM SUBMIT
-
-document.getElementById("checkout-form").addEventListener("submit", async (e)=>{
-
-e.preventDefault();
-
-const orderData = {
-
-userName: document.getElementById("custName").value,
-
-userEmail: document.getElementById("custEmail").value,
-
-phone: document.getElementById("custPhone").value,
-
-address: document.getElementById("custAddress").value,
-
-items: cart,
-
-total: parseFloat(total)
-
-};
+    if (totalDisplay) {
+        totalDisplay.innerText = "₹" + total;
+    }
 
 
-try{
+    /* ==========================
+       FORM SUBMIT
+    ========================== */
 
-const response = await fetch("/order",{
+    if (form) {
 
-method:"POST",
+        form.addEventListener("submit", async (e) => {
 
-headers:{
-"Content-Type":"application/json"
-},
+            e.preventDefault();
 
-body: JSON.stringify(orderData)
+            if (cart.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
 
-});
+            const orderData = {
 
-const result = await response.json();
+                userName: document.getElementById("custName").value,
+                userEmail: document.getElementById("custEmail").value,
+                phone: document.getElementById("custPhone").value,
+                address: document.getElementById("custAddress").value,
+                items: cart,
+                total: parseFloat(total)
 
-if(response.ok){
+            };
 
-alert("Order Successful 🎉");
 
-localStorage.removeItem("cart");
+            try {
 
-localStorage.removeItem("cartTotal");
+                const response = await fetch("/order", {
 
-window.location.href = "index.html";
+                    method: "POST",
 
-}else{
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-alert(result.error);
+                    body: JSON.stringify(orderData)
 
-}
+                });
 
-}catch(err){
+                const result = await response.json();
 
-alert("Server error");
+                if (response.ok) {
 
-}
+                    alert("🎉 Order placed successfully!");
 
-});
+                    localStorage.removeItem("cart");
+                    localStorage.removeItem("cartTotal");
+
+                    window.location.href = "index.html";
+
+                } else {
+
+                    alert(result.error || "Order failed");
+
+                }
+
+            } catch (err) {
+
+                console.error(err);
+                alert("Server error. Please try again.");
+
+            }
+
+        });
+
+    }
 
 });

@@ -1,14 +1,16 @@
+/* ==========================================
+   LOGIN PROTECTION
+========================================== */
 
-// LOGIN PROTECTION
-
-const user = localStorage.getItem("userName");
+const user = localStorage.getItem("userEmail");
 
 if(!user){
-
 window.location.href = "login.html";
+}
 
-}/* ==========================================
-   FreshMart Store Script
+
+/* ==========================================
+   CART DATA
 ========================================== */
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -35,7 +37,7 @@ if(productContainer){
 productContainer.innerHTML =
 products.length > 0
 ? products.map(p => createProductCard(p)).join("")
-: `<p class="text-center text-gray-500 col-span-4">No products available.</p>`;
+: `<p class="text-center text-gray-500 col-span-4">No products available</p>`;
 
 }
 
@@ -44,8 +46,10 @@ products.length > 0
 console.error(err);
 
 if(productContainer){
+
 productContainer.innerHTML =
 `<p class="text-red-500 text-center col-span-4">Server error loading products</p>`;
+
 }
 
 }
@@ -61,41 +65,31 @@ function createProductCard(product){
 
 return `
 
-<div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden group">
-
-<div class="relative">
+<div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden">
 
 <img
 src="${product.image}"
 alt="${product.name}"
-class="w-full h-48 object-cover group-hover:scale-105 transition"
+class="w-full h-48 object-cover"
 />
-
-<span class="absolute top-3 left-3 bg-tealMain text-white text-xs px-2 py-1 rounded">
-
-${product.category}
-
-</span>
-
-</div>
 
 <div class="p-4">
 
-<h3 class="font-bold text-lg text-charcoal">
+<span class="text-xs bg-teal-700 text-white px-2 py-1 rounded">
+${product.category}
+</span>
 
+<h3 class="font-bold text-lg mt-2">
 ${product.name}
-
 </h3>
 
-<p class="text-copper font-bold text-xl mt-1">
-
+<p class="text-copper font-bold text-xl">
 ₹${product.price.toFixed(2)}
-
 </p>
 
 <button
 onclick="addToCart('${product._id}','${product.name}',${product.price},'${product.image}')"
-class="mt-4 w-full bg-tealMain text-white py-2 rounded-lg hover:opacity-90 transition">
+class="mt-3 w-full bg-teal-700 text-white py-2 rounded hover:opacity-90">
 
 Add To Cart
 
@@ -135,7 +129,6 @@ quantity:1
 }
 
 saveCart();
-
 updateCartUI();
 
 showToast(name + " added to cart");
@@ -176,24 +169,18 @@ badge.innerText = totalItems;
 
 
 /* =========================
-   USER LOGIN DISPLAY
+   USER DISPLAY
 ========================= */
 
 function checkUserLogin(){
 
 const userName = localStorage.getItem("userName");
 
-const loginLink = document.getElementById("login-link");
-
 const userDisplay = document.getElementById("user-display");
 
 if(userName && userDisplay){
 
 userDisplay.innerText = "Hi, " + userName;
-
-userDisplay.classList.remove("hidden");
-
-if(loginLink) loginLink.style.display = "none";
 
 }
 
@@ -207,12 +194,13 @@ if(loginLink) loginLink.style.display = "none";
 function logout(){
 
 localStorage.removeItem("userName");
-
 localStorage.removeItem("userEmail");
+localStorage.removeItem("userRole");
+localStorage.removeItem("cart");
 
 alert("Logged out successfully");
 
-window.location.reload();
+window.location.href = "login.html";
 
 }
 
@@ -225,8 +213,7 @@ function goToCheckout(){
 
 if(cart.length === 0){
 
-alert("Your cart is empty!");
-
+alert("Your cart is empty");
 return;
 
 }
@@ -237,7 +224,7 @@ window.location.href = "checkout.html";
 
 
 /* =========================
-   SIMPLE TOAST
+   TOAST MESSAGE
 ========================= */
 
 function showToast(message){
@@ -247,14 +234,12 @@ const toast = document.createElement("div");
 toast.innerText = message;
 
 toast.className =
-"fixed bottom-6 right-6 bg-tealMain text-white px-6 py-3 rounded-lg shadow-lg";
+"fixed bottom-5 right-5 bg-teal-700 text-white px-6 py-3 rounded-lg shadow-lg";
 
 document.body.appendChild(toast);
 
 setTimeout(()=>{
-
 toast.remove();
-
 },2500);
 
 }
@@ -267,9 +252,7 @@ toast.remove();
 document.addEventListener("DOMContentLoaded",()=>{
 
 loadProducts();
-
 updateCartUI();
-
 checkUserLogin();
 
 });

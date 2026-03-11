@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checkout | FreshMart</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -23,63 +27,69 @@ charcoal: "#2B2B2B"
 
 </head>
 
-<body class="bg-sand min-h-screen flex items-center justify-center">
 
-<div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl">
+<body class="bg-sand min-h-screen flex items-center justify-center p-4">
 
-<h1 class="text-2xl font-bold text-tealMain mb-6">
+<div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-3xl">
+
+<h1 class="text-2xl md:text-3xl font-bold text-tealMain mb-6">
 Checkout
 </h1>
 
 
 <!-- CART ITEMS -->
-<div id="checkout-items" class="mb-6"></div>
+
+<div id="checkout-items"
+class="space-y-4 mb-6 max-h-60 overflow-y-auto">
+</div>
 
 
 <!-- TOTAL -->
-<div class="flex justify-between text-xl font-bold mb-6">
+
+<div class="flex justify-between items-center text-xl font-bold mb-6 border-t pt-4">
 
 <span>Total</span>
 
-<span id="checkout-total" class="text-copper"></span>
+<span id="checkout-total" class="text-copper">$0</span>
 
 </div>
 
 
 <!-- FORM -->
-<form id="checkout-form" class="space-y-4">
+
+<form id="checkout-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 <input
 id="custName"
 placeholder="Full Name"
 required
-class="w-full border p-3 rounded"
+class="border p-3 rounded focus:ring-2 focus:ring-tealMain outline-none"
 />
 
 <input
 id="custEmail"
 placeholder="Email"
 required
-class="w-full border p-3 rounded"
+class="border p-3 rounded focus:ring-2 focus:ring-tealMain outline-none"
 />
 
 <input
 id="custPhone"
 placeholder="Phone"
 required
-class="w-full border p-3 rounded"
+class="border p-3 rounded focus:ring-2 focus:ring-tealMain outline-none"
 />
 
 <textarea
 id="custAddress"
 placeholder="Address"
 required
-class="w-full border p-3 rounded"
-></textarea>
+class="border p-3 rounded md:col-span-2 focus:ring-2 focus:ring-tealMain outline-none">
+</textarea>
 
 <button
 type="submit"
-class="w-full bg-tealMain text-white py-3 rounded hover:opacity-90">
+class="md:col-span-2 w-full bg-tealMain text-white py-3 rounded-lg font-semibold hover:opacity-90 transition">
 
 Place Order
 
@@ -92,4 +102,5 @@ Place Order
 <script src="checkout.js"></script>
 
 </body>
+
 </html>

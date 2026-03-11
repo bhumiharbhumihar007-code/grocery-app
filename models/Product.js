@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
 
     description: {
         type: String,
-        required: true
+        default: ""
     },
 
     price: {
@@ -21,18 +21,18 @@ const productSchema = new mongoose.Schema(
 
     category: {
         type: String,
-        required: true,
+        default: "General",
         trim: true
     },
 
     stock: {
         type: Number,
-        default: 0
+        default: 10
     },
 
     image: {
         type: String,
-        required: true
+        default: "https://via.placeholder.com/300"
     },
 
     brand: {

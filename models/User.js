@@ -24,12 +24,12 @@ const userSchema = new mongoose.Schema(
 
     phone: {
         type: String,
-        trim: true
+        default: ""
     },
 
     address: {
         type: String,
-        trim: true
+        default: ""
     },
 
     role: {
@@ -39,7 +39,8 @@ const userSchema = new mongoose.Schema(
     }
 
 },
-{ timestamps: true }
-);
+{
+    timestamps: true
+});
 
 module.exports = mongoose.model("User", userSchema);

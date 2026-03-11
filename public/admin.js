@@ -1,5 +1,5 @@
-// Load Google Charts
-google.charts.load('current', { packages: ['corechart'] });
+/ Load Google Charts
+google.ch/arts.load('current', { packages: ['corechart'] });
 
 /* ==========================
    1. ADMIN PROTECTION
@@ -230,19 +230,253 @@ if (productForm) {
 
                 alert("✅ Product Added Successfully");
 
+// Load Google Charts
+google.charts.load('current', { packages: ['corechart'] });
+
+/* ==========================
+   1. ADMIN PROTECTION
+========================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const role = localStorage.getItem("userRole");
+
+    if (role !== "admin") {
+        alert("❌ Access Denied");
+        window.location.href = "login.html";
+        return;
+    }
+
+    loadAdminData();
+});
+
+
+/* ==========================
+   2. LOAD ADMIN DATA
+========================== */
+
+async function loadAdminData() {
+
+    try {
+
+        const res = await fetch("/adminData");
+        const data = await res.json();
+
+        /* ---------- STATS ---------- */
+
+        const users = document.getElementById("total-users");
+        const products = document.getElementById("total-products");
+        const revenueEl = document.getElementById("total-revenue");
+
+        if (users) users.innerText = data.users.length;
+        if (products) products.innerText = data.products.length;
+
+        const revenue = data.orders.reduce((sum, o) => sum + o.total, 0);
+
+        if (revenueEl) revenueEl.innerText = "₹" + revenue.toFixed(2);
+
+
+        /* ---------- PRODUCT TABLE ---------- */
+
+        const pBody = document.getElementById("inventory-table");
+
+        if (pBody) {
+
+            pBody.innerHTML = data.products.map(p => `
+            
+            <tr class="hover:bg-gray-50">
+
+                <td class="p-3">
+                    <img src="${p.image}" class="w-12 h-12 rounded object-cover">
+                </td>
+
+                <td class="p-3 font-medium">${p.name}</td>
+
+                <td class="p-3 text-teal-700 font-semibold">
+                    ₹${p.price}
+                </td>
+
+                <td class="p-3">
+                    <span class="px-2 py-1 bg-teal-100 text-teal-700 rounded text-xs">
+                        ${p.category}
+                    </span>
+                </td>
+
+                <td class="p-3">
+                    <button onclick="deleteProduct('${p._id}')"
+                    class="text-red-500 hover:text-red-700">
+                    Delete
+                    </button>
+                </td>
+
+            </tr>
+
+            `).join("");
+
+        }
+
+
+        /* ---------- ORDERS TABLE ---------- */
+
+        const oBody = document.getElementById("orders-table");
+
+        if (oBody) {
+
+            oBody.innerHTML = data.orders.map(o => `
+
+            <tr class="hover:bg-gray-50">
+
+                <td class="p-3">
+                    <strong>${o.userName}</strong><br>
+                    <small>${o.phone || "No Phone"}</small>
+                </td>
+
+                <td class="p-3 text-sm max-w-xs">
+                    ${o.address || "No Address"}
+                </td>
+
+                <td class="p-3 text-sm">
+                    ${o.items.map(i => i.name).join(", ")}
+                </td>
+
+                <td class="p-3 font-semibold text-teal-700">
+                    ₹${o.total}
+                </td>
+
+                <td class="p-3">
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">
+                        ${o.status || "Pending"}
+                    </span>
+                </td>
+
+            </tr>
+
+            `).join("");
+
+        }
+
+
+        /* ---------- SALES CHART ---------- */
+
+        if (data.orders.length > 0) {
+            drawChart(data.orders);
+        }
+
+    } catch (err) {
+
+        console.error("Dashboard error:", err);
+        alert("Failed to load admin data");
+
+    }
+
+}
+
+
+/* ==========================
+   3. SALES CHART
+========================== */
+
+function drawChart(orders) {
+
+    const chartData = [["Date", "Revenue"]];
+    const grouped = {};
+
+    orders.forEach(order => {
+
+        const date = new Date(order.createdAt || Date.now()).toLocaleDateString();
+
+        grouped[date] = (grouped[date] || 0) + order.total;
+
+    });
+
+    for (let date in grouped) {
+        chartData.push([date, grouped[date]]);
+    }
+
+    google.charts.setOnLoadCallback(() => {
+
+        const data = google.visualization.arrayToDataTable(chartData);
+
+        const options = {
+            title: "Daily Sales",
+            curveType: "function",
+            legend: { position: "bottom" },
+            colors: ["#004D4D"],
+            backgroundColor: "transparent"
+        };
+
+        const chartElement = document.getElementById("salesChart");
+
+        if (chartElement) {
+
+            const chart = new google.visualization.LineChart(chartElement);
+
+            chart.draw(data, options);
+
+        }
+
+    });
+
+}
+
+
+/* ==========================
+   4. ADD PRODUCT
+========================== */
+
+const productForm = document.getElementById("add-product-form");
+
+if (productForm) {
+
+    productForm.addEventListener("submit", async (e) => {
+
+        e.preventDefault();
+
+        const pData = {
+
+            name: document.getElementById("pName").value,
+            description: document.getElementById("pDesc").value,
+            price: parseFloat(document.getElementById("pPrice").value),
+            category: document.getElementById("pCategory").value,
+            image: document.getElementById("pImage").value,
+            stock: 10
+
+        };
+
+        try {
+
+            const res = await fetch("/addProduct", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(pData)
+
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+
+                alert("✅ Product Added Successfully");
+
                 productForm.reset();
 
                 loadAdminData();
 
             } else {
 
-                alert("❌ Failed to add product");
+                alert(data.error || "Failed to add product");
 
             }
 
         } catch (err) {
 
             console.error(err);
+            alert("Server error");
 
         }
 
@@ -257,7 +491,7 @@ if (productForm) {
 
 async function deleteProduct(id) {
 
-    if (!confirm("⚠ Are you sure you want to delete this product?")) return;
+    if (!confirm("⚠ Delete this product?")) return;
 
     try {
 
@@ -267,6 +501,7 @@ async function deleteProduct(id) {
 
         if (res.ok) {
 
+            alert("Product deleted");
             loadAdminData();
 
         } else {

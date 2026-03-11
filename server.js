@@ -4,7 +4,10 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
-// Models
+/* =========================
+   MODELS
+========================= */
+
 const User = require("./models/User");
 const Product = require("./models/Product");
 const Order = require("./models/Order");
@@ -12,11 +15,10 @@ const Order = require("./models/Order");
 const app = express();
 
 /* =========================
-   Middleware
+   MIDDLEWARE
 ========================= */
 
 app.use(express.json());
-app.use(express.static("public"));
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
@@ -25,10 +27,10 @@ res.sendFile(path.join(__dirname, "public", "login.html"));
 
 
 /* =========================
-   MongoDB Connection
+   MONGODB CONNECTION
 ========================= */
 
-mongoose.connect("mongodb+srv://groceryuser:grocery123@cluster0.6xciiec.mongodb.net/groceryDB?retryWrites=true&w=majority")
+mongoose.connect(process.env.MONGO_URI)
 .then(()=>console.log("MongoDB Connected ✅"))
 .catch(err=>console.log("Mongo Error:",err));
 
@@ -37,7 +39,7 @@ mongoose.connect("mongodb+srv://groceryuser:grocery123@cluster0.6xciiec.mongodb.
    AUTH ROUTES
 ========================= */
 
-// Register
+// REGISTER
 app.post("/register", async (req,res)=>{
 
 try{
@@ -60,7 +62,7 @@ password:hashedPassword
 
 await newUser.save();
 
-res.json({message:"Registration Successful ✅"});
+res.json({message:"Registration successful"});
 
 }catch(err){
 
@@ -71,7 +73,7 @@ res.status(500).json({error:"Registration failed"});
 });
 
 
-// Login
+// LOGIN
 app.post("/login", async (req,res)=>{
 
 try{
@@ -81,19 +83,25 @@ const {email,password} = req.body;
 const user = await User.findOne({email});
 
 if(!user){
-return res.status(401).json({error:"Invalid Email or Password"});
+return res.status(401).json({error:"Invalid email or password"});
 }
 
 const match = await bcrypt.compare(password,user.password);
 
 if(!match){
-return res.status(401).json({error:"Invalid Email or Password"});
+return res.status(401).json({error:"Invalid email or password"});
 }
 
 res.json({
-message:"Login Successful",
-userName:user.name,
-userEmail:user.email
+
+message:"Login successful",
+
+user:{
+name:user.name,
+email:user.email,
+role:user.role
+}
+
 });
 
 }catch(err){
@@ -109,7 +117,7 @@ res.status(500).json({error:"Login failed"});
    PRODUCT ROUTES
 ========================= */
 
-// Get Products
+// GET PRODUCTS
 app.get("/products", async (req,res)=>{
 
 try{
@@ -127,7 +135,7 @@ res.status(500).json({error:"Products load failed"});
 });
 
 
-// Add Product
+// ADD PRODUCT
 app.post("/addProduct", async (req,res)=>{
 
 try{
@@ -136,7 +144,7 @@ const product = new Product(req.body);
 
 await product.save();
 
-res.json({message:"Product Added ✅"});
+res.json({message:"Product added successfully"});
 
 }catch(err){
 
@@ -147,14 +155,14 @@ res.status(400).json({error:"Product save failed"});
 });
 
 
-// Delete Product
+// DELETE PRODUCT
 app.delete("/deleteProduct/:id", async (req,res)=>{
 
 try{
 
 await Product.findByIdAndDelete(req.params.id);
 
-res.json({message:"Product Deleted 🗑️"});
+res.json({message:"Product deleted"});
 
 }catch(err){
 
@@ -187,15 +195,13 @@ phone,
 
 items,
 
-total,
-
-date:new Date()
+total
 
 });
 
 await newOrder.save();
 
-res.json({message:"Order Placed Successfully 🚚"});
+res.json({message:"Order placed successfully"});
 
 }catch(err){
 
@@ -207,7 +213,7 @@ res.status(500).json({error:"Order failed"});
 
 
 /* =========================
-   ADMIN DASHBOARD
+   ADMIN DASHBOARD DATA
 ========================= */
 
 app.get("/adminData", async (req,res)=>{
@@ -215,9 +221,7 @@ app.get("/adminData", async (req,res)=>{
 try{
 
 const users = await User.find();
-
 const orders = await Order.find();
-
 const products = await Product.find();
 
 res.json({users,orders,products});
@@ -238,5 +242,7 @@ res.status(500).json({error:"Admin data failed"});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT,()=>{
-console.log(`🚀 Server running on http://localhost:${PORT}`);
+
+console.log(`🚀 Server running on port ${PORT}`);
+
 });

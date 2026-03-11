@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>pharmacy</title>
+<title>FreshMart</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -15,16 +15,33 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 </head>
 
+
 <body class="bg-gray-100">
+
+
+<!-- LOGIN PROTECTION -->
+
+<script>
+
+const user = localStorage.getItem("userEmail");
+
+if(!user){
+
+window.location.href = "login.html";
+
+}
+
+</script>
+
 
 
 <!-- NAVBAR -->
 
-<nav class="bg-teal-700 text-white p-4">
+<nav class="bg-teal-700 text-white p-4 shadow">
 
 <div class="max-w-7xl mx-auto flex justify-between items-center">
 
-<h1 class="text-xl font-bold">
+<h1 class="text-xl md:text-2xl font-bold">
 FreshMart
 </h1>
 
@@ -44,8 +61,9 @@ class="absolute -top-2 -right-3 bg-red-500 text-xs px-2 py-1 rounded-full">
 
 </a>
 
-<button onclick="logout()"
-class="bg-red-500 px-3 py-1 rounded">
+<button
+onclick="logout()"
+class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded">
 
 Logout
 
@@ -58,11 +76,12 @@ Logout
 </nav>
 
 
+
 <!-- HERO SECTION -->
 
-<section class="bg-white py-10 text-center">
+<section class="bg-white py-10 text-center px-4">
 
-<h2 class="text-3xl font-bold mb-3">
+<h2 class="text-2xl md:text-3xl font-bold mb-3">
 
 Welcome to FreshMart
 
@@ -77,11 +96,12 @@ Best grocery and medicine products at affordable prices
 </section>
 
 
+
 <!-- PRODUCT SECTION -->
 
 <section class="max-w-7xl mx-auto p-5">
 
-<h2 class="text-2xl font-bold mb-6">
+<h2 class="text-2xl font-bold mb-6 text-center md:text-left">
 
 Products
 
@@ -101,6 +121,7 @@ lg:grid-cols-4">
 </div>
 
 </section>
+
 
 
 <script src="script.js"></script>

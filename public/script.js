@@ -1,4 +1,13 @@
-/* ==========================================
+
+// LOGIN PROTECTION
+
+const user = localStorage.getItem("userName");
+
+if(!user){
+
+window.location.href = "login.html";
+
+}/* ==========================================
    FreshMart Store Script
 ========================================== */
 

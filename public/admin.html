@@ -1,326 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Admin Dashboard | FreshMart</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        :root {
+            --teal: #004D4D;
+            --teal-light: #006666;
+            --teal-dark: #003333;
+            --sand: #F5F2ED;
+            --copper: #B87333;
+            --sage: #8A9A5B;
+            --charcoal: #2B2B2B;
+        }
 
-<title>Admin Dashboard | FreshMart</title>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
 
-<script src="https://cdn.tailwindcss.com"></script>
+        ::-webkit-scrollbar-thumb {
+            background: var(--teal);
+            border-radius: 10px;
+        }
 
-<script>
-tailwind.config = {
-theme:{
-extend:{
-colors:{
-sand:"#F5F2ED",
-teal:"#004D4D",
-copper:"#B87333",
-sage:"#8A9A5B",
-charcoal:"#2B2B2B"
-}
-}
-}
-}
-</script>
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--teal-dark);
+        }
 
+        /* Smooth Transitions */
+        * {
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .stat-card {
+                min-width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .sidebar-overlay.active {
+                display: block !important;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--teal);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Card Hover Effects */
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        /* Table Row Hover */
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-shipped {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-delivered {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .toast.info { border-left: 4px solid #3b82f6; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Focus Styles */
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: var(--teal);
+            border-color: var(--teal);
+        }
+
+        /* Touch-friendly buttons */
+        button, .clickable {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-sand text-charcoal font-sans">
-
-<div class="flex min-h-screen">
-
-<!-- MOBILE MENU BUTTON -->
-
-<button onclick="toggleSidebar()"
-class="md:hidden fixed top-4 left-4 z-50 bg-teal text-white p-2 rounded">
-
-<i class="fas fa-bars"></i>
-
-</button>
-
-<!-- SIDEBAR -->
-
-<aside id="sidebar"
-class="w-64 bg-teal text-white fixed md:static h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col">
-
-<div class="p-6 text-2xl font-bold border-b border-teal-800">
-
-<span class="text-sage">Fresh</span>Mart
-<span class="text-sm text-sand">Admin</span>
-
-</div>
-
-<nav class="flex-1 p-4 space-y-2">
-
-<a href="#stats"
-class="flex items-center space-x-3 p-3 rounded-lg bg-sage">
-
-<i class="fas fa-chart-line"></i>
-<span>Dashboard</span>
-
-</a>
-
-<a href="#inventory"
-class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700">
-
-<i class="fas fa-boxes"></i>
-<span>Inventory</span>
-
-</a>
-
-<a href="#orders"
-class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700">
-
-<i class="fas fa-shopping-bag"></i>
-<span>Orders</span>
-
-</a>
-
-<a href="index.html"
-class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 border-t border-teal-800 mt-4">
-
-<i class="fas fa-eye"></i>
-<span>View Site</span>
-
-</a>
-
-</nav>
-
-<div class="p-4 border-t border-teal-800">
-
-<button onclick="logout()"
-class="w-full bg-red-500 hover:bg-red-600 p-2 rounded">
-
-Logout
-
-</button>
-
-</div>
-
-</aside>
-
-<!-- MAIN -->
-
-<main class="flex-1 md:ml-0 p-4 md:p-6">
-
-<header class="bg-white p-4 rounded shadow flex justify-between items-center">
-
-<h1 class="text-xl font-bold text-teal">
-Admin Dashboard
-</h1>
-
-<div class="flex items-center gap-2">
-
-<i class="fas fa-user-shield text-teal"></i>
-<span>Admin</span>
-
-</div>
-
-</header>
-
-<div class="space-y-8 mt-6">
-
-<!-- STATS -->
-
-<section id="stats"
-class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-<div class="bg-white p-5 rounded shadow flex items-center gap-4">
-
-<i class="fas fa-users text-2xl text-teal"></i>
-
-<div>
-
-<p class="text-gray-500 text-sm">
-Users
-</p>
-
-<h2 id="total-users" class="text-xl font-bold">
-0
-</h2>
-
-</div>
-
-</div>
-
-<div class="bg-white p-5 rounded shadow flex items-center gap-4">
-
-<i class="fas fa-box text-2xl text-sage"></i>
-
-<div>
-
-<p class="text-gray-500 text-sm">
-Products
-</p>
-
-<h2 id="total-products" class="text-xl font-bold">
-0
-</h2>
-
-</div>
-
-</div>
-
-<div class="bg-white p-5 rounded shadow flex items-center gap-4">
-
-<i class="fas fa-dollar-sign text-2xl text-copper"></i>
-
-<div>
-
-<p class="text-gray-500 text-sm">
-Revenue
-</p>
-
-<h2 id="total-revenue" class="text-xl font-bold">
-$0
-</h2>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- ADD PRODUCT -->
-
-<section id="inventory"
-class="bg-white rounded shadow p-6">
-
-<h2 class="text-lg font-bold text-teal mb-4">
-Add Product
-</h2>
-
-<form id="add-product-form"
-class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<input type="text"
-id="pName"
-placeholder="Product Name"
-class="border p-2 rounded"
-required>
-
-<input type="number"
-id="pPrice"
-placeholder="Price"
-class="border p-2 rounded"
-required>
-
-<select id="pCategory"
-class="border p-2 rounded">
-
-<option>Fruits</option>
-<option>Vegetables</option>
-<option>Snacks</option>
-<option>Beverages</option>
-
-</select>
-
-<input type="text"
-id="pImage"
-placeholder="Image URL"
-class="border p-2 rounded">
-
-<textarea id="pDesc"
-placeholder="Description"
-class="border p-2 rounded md:col-span-2 lg:col-span-4"></textarea>
-
-<button
-class="bg-teal text-white p-2 rounded hover:bg-teal-700 md:col-span-2 lg:col-span-1">
-
-Add Product
-
-</button>
-
-</form>
-
-</section>
-
-<!-- INVENTORY TABLE -->
-
-<section class="bg-white rounded shadow overflow-x-auto">
-
-<h2 class="p-4 font-bold text-teal">
-Inventory
-</h2>
-
-<table class="w-full text-left">
-
-<thead class="bg-gray-100">
-
-<tr>
-
-<th class="p-3">Image</th>
-<th class="p-3">Name</th>
-<th class="p-3">Price</th>
-<th class="p-3">Category</th>
-<th class="p-3">Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="inventory-table"></tbody>
-
-</table>
-
-</section>
-
-<!-- ORDERS -->
-
-<section id="orders"
-class="bg-white rounded shadow overflow-x-auto">
-
-<h2 class="p-4 font-bold text-teal">
-Orders
-</h2>
-
-<table class="w-full text-left">
-
-<thead class="bg-gray-100">
-
-<tr>
-
-<th class="p-3">Customer</th>
-<th class="p-3">Address</th>
-<th class="p-3">Items</th>
-<th class="p-3">Total</th>
-<th class="p-3">Status</th>
-
-</tr>
-
-</thead>
-
-<tbody id="orders-table"></tbody>
-
-</table>
-
-</section>
-
-</div>
-
-</main>
-
-</div>
-
-<script src="admin.js"></script>
-
-<script>
-
-function toggleSidebar(){
-
-const sidebar = document.getElementById("sidebar");
-
-sidebar.classList.toggle("-translate-x-full");
-
-}
-
-</script>
-
+<body class="bg-sand text-charcoal font-sans antialiased">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <div class="loading-spinner"></div>
+            <p class="mt-4 text-gray-600">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="sidebar-overlay" 
+         class="sidebar-overlay fixed inset-0 bg-black bg-opacity-50 hidden md:hidden z-30"
+         onclick="toggleSidebar()"></div>
+
+    <div class="flex min-h-screen relative">
+        <!-- SIDEBAR -->
+        <aside id="sidebar"
+               class="w-64 bg-gradient-to-b from-teal-700 to-teal-900 text-white fixed md:static h-full 
+                      transform -translate-x-full md:translate-x-0 transition-transform duration-300 
+                      flex flex-col z-40 shadow-xl overflow-y-auto">
+            
+            <div class="p-6 text-2xl font-bold border-b border-teal-800 sticky top-0 bg-teal-900 bg-opacity-90 backdrop-blur">
+                <span class="text-sage">Fresh</span>Mart
+                <span class="text-sm text-sand block mt-1">Admin Panel</span>
+            </div>
+
+            <!-- User Info (Mobile) -->
+            <div class="md:hidden p-4 bg-teal-800 bg-opacity-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-sage flex items-center justify-center">
+                        <i class="fas fa-user-shield text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-sand">Logged in as</p>
+                        <p id="admin-name-mobile" class="font-bold">Admin</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                <a href="#stats"
+                   class="flex items-center space-x-3 p-3 rounded-lg bg-sage hover:bg-sage-dark transition">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#inventory"
+                   class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
+                    <i class="fas fa-boxes w-5"></i>
+                    <span>Inventory</span>
+                </a>
+
+                <a href="#orders"
+                   class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
+                    <i class="fas fa-shopping-bag w-5"></i>
+                    <span>Orders</span>
+                </a>
+
+                <a href="#users"
+                   class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Users</span>
+                </a>
+
+                <div class="border-t border-teal-800 my-4"></div>
+
+                <a href="index.html"
+                   class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
+                    <i class="fas fa-eye w-5"></i>
+                    <span>View Site</span>
+                </a>
+
+                <a href="#" onclick="showSettings()"
+                   class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
+                    <i class="fas fa-cog w-5"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-teal-800 sticky bottom-0 bg-teal-900">
+                <div class="hidden md:block mb-3 text-sm text-sand">
+                    <i class="fas fa-user-shield"></i>
+                    <span id="admin-name" class="ml-2">Admin</span>
+                </div>
+                <button onclick="logout()"
+                        class="w-full bg-red-500 hover:bg-red-600 p-3 rounded-lg transition transform hover:scale-105 
+                               flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 md:ml-0 p-4 md:p-6 overflow-x-hidden">
+            <!-- Mobile Header -->
+            <header class="md:hidden bg-white p-4 rounded-lg shadow mb-4 flex items-center gap-4 sticky top-0 z-20">
+                <button onclick="toggleSidebar()"
+                        class="bg-teal text-white p-3 rounded-lg hover:bg-teal-700 transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h1 class="text-lg font-bold text-teal">Admin Dashboard</h1>
+                    <p class="text-xs text-gray-500" id="mobile-date"></p>
+                </div>
+            </header>
+
+            <!-- Desktop Header -->
+            <header class="hidden md:flex bg-white p-6 rounded-lg shadow mb-6 justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-teal">Dashboard Overview</h1>
+                    <p class="text-gray-500 mt-1" id="desktop-date"></p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Welcome back,</p>
+                        <p id="admin-name-desktop" class="font-bold text-teal">Admin</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-teal text-white flex items-center justify-center">
+                        <i class="fas fa-user-shield text-xl"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- STATS CARDS -->
+            <section id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Total Users</p>
+                            <h2 id="total-users" class="text-3xl font-bold text-teal">0</h2>
+                            <p class="text-xs text-gray-400 mt-2">Active accounts</p>
+                        </div>
+                        <div class="w-12 h-12 bg-teal bg-opacity-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-2xl text-teal"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Products</p>
+                            <h2 id="total-products" class="text-3xl font-bold text-sage">0</h2>
+                            <p class="text-xs text-gray-400 mt-2">In inventory</p>
+                        </div>
+                        <div class="w-12 h-12 bg-sage bg-opacity-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-box text-2xl text-sage"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Orders</p>
+                            <h2 id="total-orders" class="text-3xl font-bold text-copper">0</h2>
+                            <p class="text-xs text-gray-400 mt-2">Total orders</p>
+                        </div>
+                        <div class="w-12 h-12 bg-copper bg-opacity-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-shopping-bag text-2xl text-copper"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Revenue</p>
+                            <h2 id="total-revenue" class="text-3xl font-bold text-green-600">₹0</h2>
+                            <p class="text-xs text-gray-400 mt-2">Total sales</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-rupee-sign text-2xl text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADD PRODUCT SECTION -->
+            <section id="inventory" class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-teal">
+                        <i class="fas fa-plus-circle mr-2"></i>Add New Product
+                    </h2>
+                    <span class="text-sm text-gray-500">Fill all required fields</span>
+                </div>
+
+                <form id="add-product-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                        <input type="text"
+                               id="pName"
+                               placeholder="e.g., Fresh Apples"
+                               class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal"
+                               required>
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                        <input type="number"
+                               id="pPrice"
+                               placeholder="199"
+                               step="0.01"
+                               min="0"
+                               class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal"
+                               required>
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                        <select id="pCategory"
+                                class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal">
+                            <option value="Fruits">Fruits</option>
+                            <option value="Vegetables">Vegetables</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Dairy">Dairy</option>
+                            <option value="Bakery">Bakery</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
+                        <input type="number"
+                               id="pStock"
+                               placeholder="100"
+                               min="0"
+                               class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal">
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2 lg:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                        <input type="url"
+                               id="pImage"
+                               placeholder="https://example.com/image.jpg"
+                               class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal">
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2 lg:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="pDesc"
+                                  placeholder="Product description..."
+                                  rows="3"
+                                  class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal"></textarea>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2 lg:col-span-4">
+                        <button type="submit"
+                                class="w-full md:w-auto bg-gradient-to-r from-teal-600 to-teal-700 text-white px-8 py-3 
+                                       rounded-lg hover:from-teal-700 hover:to-teal-800 transition transform hover:scale-105 
+                                       flex items-center justify-center gap-2 font-medium">
+                            <i class="fas fa-plus-circle"></i>
+                            Add Product
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- INVENTORY TABLE -->
+            <section class="bg-white rounded-lg shadow overflow-hidden mb-8">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h2 class="text-xl font-bold text-teal">
+                            <i class="fas fa-boxes mr-2"></i>Inventory Management
+                        </h2>
+                        <div class="flex gap-2">
+                            <button onclick="exportData('products')"
+                                    class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
+                                <i class="fas fa-download mr-2"></i>Export
+                            </button>
+                            <div class="relative">
+                                <input type="text"
+                                       id="search-inventory"
+                                       placeholder="Search products..."
+                                       class="border border-gray-300 pl-10 pr-4 py-2 rounded-lg focus:ring-2 focus:ring-teal">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Image</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Product</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Price</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Category</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Stock</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ORDERS TABLE -->
+            <section id="orders" class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h2 class="text-xl font-bold text-teal">
+                            <i class="fas fa-shopping-bag mr-2"></i>Order Management
+                        </h2>
+                        <div class="flex gap-2">
+                            <select id="order-filter" 
+                                    class="border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-teal">
+                                <option value="all">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Customer</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Order Details</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Items</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Total</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Status</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- USERS SECTION (Hidden by default) -->
+            <section id="users" class="bg-white rounded-lg shadow overflow-hidden mt-8 hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-teal">
+                        <i class="fas fa-users mr-2"></i>User Management
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">User</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Role</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Joined</th>
+                                <th class="p-4 text-left text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Quick Stats Footer -->
+            <footer class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <p class="text-sm text-gray-500">Pending Orders</p>
+                    <p id="pending-orders" class="text-xl font-bold text-yellow-600">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <p class="text-sm text-gray-500">Low Stock</p>
+                    <p id="low-stock" class="text-xl font-bold text-red-600">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <p class="text-sm text-gray-500">Avg. Order</p>
+                    <p id="avg-order" class="text-xl font-bold text-teal">₹0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <p class="text-sm text-gray-500">Today's Orders</p>
+                    <p id="today-orders" class="text-xl font-bold text-green-600">0</p>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Order Details</h3>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                <div id="order-details-content" class="space-y-4">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="admin.js"></script>
+    <script>
+        // Sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('active');
+            
+            // Prevent body scroll when sidebar is open on mobile
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuButton = document.querySelector('button[onclick="toggleSidebar()"]');
+            
+            if (window.innerWidth < 768 && 
+                !sidebar.contains(e.target) && 
+                !menuButton?.contains(e.target) &&
+                !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Update date
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+            
+            document.getElementById('mobile-date').textContent = dateString;
+            document.getElementById('desktop-date').textContent = dateString;
+        }
+        updateDate();
+
+        // Show settings
+        function showSettings() {
+            alert('Settings panel coming soon!');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('order-modal').classList.remove('active');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Search inventory
+        document.getElementById('search-inventory')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#inventory-table tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Order filter
+        document.getElementById('order-filter')?.addEventListener('change', function(e) {
+            const filter = e.target.value;
+            const rows = document.querySelectorAll('#orders-table tr');
+            
+            rows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else {
+                    const status = row.querySelector('.status-badge')?.textContent.toLowerCase() || '';
+                    row.style.display = status.includes(filter) ? '' : 'none';
+                }
+            });
+        });
+
+        // Prevent form double submission
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                    }, 2000);
+                }
+            });
+        });
+
+        // Touch-friendly interactions
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('button, .clickable').forEach(el => {
+                el.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.7';
+                });
+                el.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                });
+            });
+        }
+
+        // Show loading
+        function showLoading() {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('loading-overlay').classList.remove('flex');
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Close sidebar on mobile after clicking
+                    if (window.innerWidth < 768) {
+                        toggleSidebar();
+                    }
+                }
+            });
+        });
+
+        // Section navigation
+        document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                
+                // Hide all sections
+                document.querySelectorAll('main > section, #users').forEach(section => {
+                    if (section.id !== 'stats' && section.id !== 'inventory' && 
+                        section.id !== 'orders' && section.id !== 'users') {
+                        return;
+                    }
+                    
+                    if (targetId === '#stats' && section.id === 'stats') {
+                        section.classList.remove('hidden');
+                    } else if (targetId === '#inventory' && section.id === 'inventory') {
+                        section.classList.remove('hidden');
+                    } else if (targetId === '#orders' && section.id === 'orders') {
+                        section.classList.remove('hidden');
+                        document.getElementById('users')?.classList.add('hidden');
+                    } else if (targetId === '#users' && section.id === 'users') {
+                        section.classList.remove('hidden');
+                        document.getElementById('orders')?.classList.add('hidden');
+                    } else if (section.id !== 'users' && section.id !== 'orders') {
+                        if (targetId !== '#stats' && targetId !== '#inventory') {
+                            section.classList.remove('hidden');
+                        }
+                    }
+                });
+                
+                // Scroll to target
+                const target = document.querySelector(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>

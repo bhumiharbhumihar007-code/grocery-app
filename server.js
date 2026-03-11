@@ -17,11 +17,8 @@ const app = express();
    MIDDLEWARE
 ========================= */
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
 
-/* =========================
-   HOME ROUTE
-========================= */
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "login.html"));
 });
@@ -29,15 +26,9 @@ app.get("/", (req, res) => {
 /* =========================
    MONGODB CONNECTION
 ========================= */
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log("MongoDB Connected ✅"))
-.catch(err => {
-    console.error("MongoDB Connection Error:", err);
-    process.exit(1); // Stop server if DB fails
-});
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB Connected ✅"))
+    .catch(err => console.log("Mongo Error:", err));
 
 /* =========================
    AUTH ROUTES
@@ -47,14 +38,10 @@ mongoose.connect(process.env.MONGO_URI, {
 app.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
+        const userExists = await User.findOne({ email });
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ success: false, error: "All fields are required" });
-        }
-
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ success: false, error: "User already exists" });
+        if (userExists) {
+            return res.status(400).json({ error: "User already exists" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,15 +49,17 @@ app.post("/register", async (req, res) => {
         const newUser = new User({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: "user" // default role
         });
 
         await newUser.save();
 
-        res.json({ success: true, message: "Registration successful" });
+        res.json({ message: "Registration successful ✅" });
+
     } catch (err) {
-        console.error("Register Error:", err);
-        res.status(500).json({ success: false, error: "Registration failed" });
+        console.error(err);
+        res.status(500).json({ error: "Registration failed" });
     }
 });
 
@@ -78,29 +67,31 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-        if (!email || !password) {
-            return res.status(400).json({ success: false, error: "Email and password required" });
+        if (!user) {
+            return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ success: false, error: "Invalid email or password" });
-
         const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(401).json({ success: false, error: "Invalid email or password" });
 
+        if (!match) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        // Send role to client for admin access
         res.json({
-            success: true,
-            message: "Login successful",
+            message: "Login successful ✅",
             user: {
                 name: user.name,
                 email: user.email,
                 role: user.role || "user"
             }
         });
+
     } catch (err) {
-        console.error("Login Error:", err);
-        res.status(500).json({ success: false, error: "Login failed" });
+        console.error(err);
+        res.status(500).json({ error: "Login failed" });
     }
 });
 
@@ -114,8 +105,7 @@ app.get("/products", async (req, res) => {
         const products = await Product.find();
         res.json(products);
     } catch (err) {
-        console.error("Fetch Products Error:", err);
-        res.status(500).json({ success: false, error: "Products load failed" });
+        res.status(500).json({ error: "Products load failed" });
     }
 });
 
@@ -124,10 +114,10 @@ app.post("/addProduct", async (req, res) => {
     try {
         const product = new Product(req.body);
         await product.save();
-        res.json({ success: true, message: "Product added successfully" });
+        res.json({ message: "Product added successfully ✅" });
     } catch (err) {
-        console.error("Add Product Error:", err);
-        res.status(400).json({ success: false, error: "Product save failed" });
+        console.error(err);
+        res.status(400).json({ error: "Product save failed" });
     }
 });
 
@@ -135,23 +125,19 @@ app.post("/addProduct", async (req, res) => {
 app.delete("/deleteProduct/:id", async (req, res) => {
     try {
         await Product.findByIdAndDelete(req.params.id);
-        res.json({ success: true, message: "Product deleted" });
+        res.json({ message: "Product deleted 🗑️" });
     } catch (err) {
-        console.error("Delete Product Error:", err);
-        res.status(500).json({ success: false, error: "Delete failed" });
+        console.error(err);
+        res.status(500).json({ error: "Delete failed" });
     }
 });
 
 /* =========================
-   ORDER ROUTE
+   ORDER ROUTES
 ========================= */
 app.post("/order", async (req, res) => {
     try {
         const { items, total, userName, userEmail, address, phone } = req.body;
-
-        if (!items || !userEmail || !address) {
-            return res.status(400).json({ success: false, error: "Missing order information" });
-        }
 
         const newOrder = new Order({
             userName: userName || "Guest",
@@ -160,15 +146,16 @@ app.post("/order", async (req, res) => {
             phone,
             items,
             total,
-            createdAt: new Date()
+            date: new Date()
         });
 
         await newOrder.save();
 
-        res.json({ success: true, message: "Order placed successfully" });
+        res.json({ message: "Order placed successfully 🚚" });
+
     } catch (err) {
-        console.error("Order Error:", err);
-        res.status(500).json({ success: false, error: "Order failed" });
+        console.error(err);
+        res.status(500).json({ error: "Order failed" });
     }
 });
 
@@ -178,20 +165,45 @@ app.post("/order", async (req, res) => {
 app.get("/adminData", async (req, res) => {
     try {
         const users = await User.find();
-        const products = await Product.find();
         const orders = await Order.find();
+        const products = await Product.find();
 
-        res.json({ success: true, users, products, orders });
+        res.json({ users, orders, products });
+
     } catch (err) {
-        console.error("Admin Data Error:", err);
-        res.status(500).json({ success: false, error: "Admin data failed" });
+        console.error(err);
+        res.status(500).json({ error: "Admin data failed" });
     }
 });
 
 /* =========================
-   START SERVER
+   CREATE DEFAULT ADMIN
+========================= */
+async function createAdmin() {
+    try {
+        const adminExists = await User.findOne({ email: "admin@freshmart.com" });
+        if (!adminExists) {
+            const hashedPassword = await bcrypt.hash("admin123", 10);
+            const admin = new User({
+                name: "Admin",
+                email: "admin@freshmart.com",
+                password: hashedPassword,
+                role: "admin"
+            });
+            await admin.save();
+            console.log("Default Admin Created ✅");
+        }
+    } catch (err) {
+        console.error("Admin creation error:", err);
+    }
+}
+createAdmin();
+
+/* =========================
+   SERVER START
 ========================= */
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });

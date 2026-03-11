@@ -1,113 +1,266 @@
 /* ==========================================
-   Professional Grocery Store - Main Script
-   ========================================== */
+   FreshMart Store Script
+========================================== */
 
-// 1. Global Variables & Initialization
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-const productContainer = document.getElementById('product-display');
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// 2. Database se Products Load karna (Real-time Fetch)
-async function loadProducts() {
-    try {
-        const response = await fetch('/products');
-        if (!response.ok) throw new Error("Database se data nahi mila");
-        
-        const products = await response.json();
+const productContainer = document.getElementById("product-display");
 
-        if (productContainer) {
-            productContainer.innerHTML = products.length > 0 
-                ? products.map(product => createProductCard(product)).join('')
-                : `<p class='no-data'>Filhal koi product available nahi hai.</p>`;
-        }
-    } catch (err) {
-        console.error("Error loading products:", err);
-        if(productContainer) productContainer.innerHTML = "<p>Server connection error!</p>";
-    }
+
+/* =========================
+   LOAD PRODUCTS
+========================= */
+
+async function loadProducts(){
+
+try{
+
+const response = await fetch("/products");
+
+if(!response.ok) throw new Error("Product fetch failed");
+
+const products = await response.json();
+
+if(productContainer){
+
+productContainer.innerHTML =
+products.length > 0
+? products.map(p => createProductCard(p)).join("")
+: `<p class="text-center text-gray-500 col-span-4">No products available.</p>`;
+
 }
 
-// Product Card HTML Template
-function createProductCard(product) {
-    return `
-        <div class="product-card">
-            <div class="product-tag">${product.category}</div>
-            <img src="${product.image}" alt="${product.name}" loading="lazy">
-            <div class="product-info">
-                <h3>${product.name}</h3>
-                <p class="price">$${product.price.toFixed(2)}</p>
-                <button class="btn-add" onclick="addToCart('${product._id}', '${product.name}', ${product.price}, '${product.image}')">
-                    <i class="fas fa-plus"></i> Add to Cart
-                </button>
-            </div>
-        </div>`;
+}catch(err){
+
+console.error(err);
+
+if(productContainer){
+productContainer.innerHTML =
+`<p class="text-red-500 text-center col-span-4">Server error loading products</p>`;
 }
 
-// 3. Cart Management
-function addToCart(id, name, price, image) {
-    const existingItem = cart.find(item => item.id === id);
-
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ id, name, price, image, quantity: 1 });
-    }
-
-    saveCart();
-    updateCartUI();
-    showToast(`${name} added to cart!`); // alert ki jagah toast message (optional)
 }
 
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    localStorage.setItem('cartTotal', total.toFixed(2));
 }
 
-function updateCartUI() {
-    const cartCountElement = document.getElementById('cart-count');
-    if (cartCountElement) {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCountElement.innerText = totalItems;
-    }
+
+/* =========================
+   PRODUCT CARD
+========================= */
+
+function createProductCard(product){
+
+return `
+
+<div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden group">
+
+<div class="relative">
+
+<img
+src="${product.image}"
+alt="${product.name}"
+class="w-full h-48 object-cover group-hover:scale-105 transition"
+/>
+
+<span class="absolute top-3 left-3 bg-tealMain text-white text-xs px-2 py-1 rounded">
+
+${product.category}
+
+</span>
+
+</div>
+
+<div class="p-4">
+
+<h3 class="font-bold text-lg text-charcoal">
+
+${product.name}
+
+</h3>
+
+<p class="text-copper font-bold text-xl mt-1">
+
+₹${product.price.toFixed(2)}
+
+</p>
+
+<button
+onclick="addToCart('${product._id}','${product.name}',${product.price},'${product.image}')"
+class="mt-4 w-full bg-tealMain text-white py-2 rounded-lg hover:opacity-90 transition">
+
+Add To Cart
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
 }
 
-// 4. Authentication UI Update (Login/Logout)
-function checkUserLogin() {
-    const userName = localStorage.getItem('userName');
-    const userDisplay = document.getElementById('user-welcome');
-    const loginLink = document.getElementById('login-link');
-    const logoutBtn = document.getElementById('logout-btn');
 
-    if (userName && userDisplay) {
-        userDisplay.innerText = `Hi, ${userName}`;
-        if(loginLink) loginLink.style.display = 'none';
-        if(logoutBtn) logoutBtn.style.display = 'block';
-    }
+/* =========================
+   ADD TO CART
+========================= */
+
+function addToCart(id,name,price,image){
+
+const existing = cart.find(item => item.id === id);
+
+if(existing){
+
+existing.quantity += 1;
+
+}else{
+
+cart.push({
+id,
+name,
+price,
+image,
+quantity:1
+});
+
 }
 
-function logout() {
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userEmail');
-    alert("Logged out successfully!");
-    window.location.reload();
+saveCart();
+
+updateCartUI();
+
+showToast(name + " added to cart");
+
 }
 
-// 5. Checkout Logic
-function goToCheckout() {
-    if (cart.length === 0) {
-        alert("Aapka cart khali hai! Pehle kuch saaman add karein.");
-        return;
-    }
-    window.location.href = "checkout.html";
+
+/* =========================
+   SAVE CART
+========================= */
+
+function saveCart(){
+
+localStorage.setItem("cart", JSON.stringify(cart));
+
+const total = cart.reduce((sum,item)=> sum + item.price * item.quantity,0);
+
+localStorage.setItem("cartTotal", total.toFixed(2));
+
 }
 
-// Utility: Simple Alert Replacement
-function showToast(msg) {
-    console.log("Toast: " + msg); // Yahan aap CSS toast use kar sakte hain
+
+/* =========================
+   UPDATE CART BADGE
+========================= */
+
+function updateCartUI(){
+
+const badge = document.getElementById("cart-count");
+
+if(!badge) return;
+
+const totalItems = cart.reduce((sum,item)=>sum+item.quantity,0);
+
+badge.innerText = totalItems;
+
 }
 
-// Page Load hone par Execution
-document.addEventListener('DOMContentLoaded', () => {
-    loadProducts();
-    updateCartUI();
-    checkUserLogin();
+
+/* =========================
+   USER LOGIN DISPLAY
+========================= */
+
+function checkUserLogin(){
+
+const userName = localStorage.getItem("userName");
+
+const loginLink = document.getElementById("login-link");
+
+const userDisplay = document.getElementById("user-display");
+
+if(userName && userDisplay){
+
+userDisplay.innerText = "Hi, " + userName;
+
+userDisplay.classList.remove("hidden");
+
+if(loginLink) loginLink.style.display = "none";
+
+}
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout(){
+
+localStorage.removeItem("userName");
+
+localStorage.removeItem("userEmail");
+
+alert("Logged out successfully");
+
+window.location.reload();
+
+}
+
+
+/* =========================
+   CHECKOUT
+========================= */
+
+function goToCheckout(){
+
+if(cart.length === 0){
+
+alert("Your cart is empty!");
+
+return;
+
+}
+
+window.location.href = "checkout.html";
+
+}
+
+
+/* =========================
+   SIMPLE TOAST
+========================= */
+
+function showToast(message){
+
+const toast = document.createElement("div");
+
+toast.innerText = message;
+
+toast.className =
+"fixed bottom-6 right-6 bg-tealMain text-white px-6 py-3 rounded-lg shadow-lg";
+
+document.body.appendChild(toast);
+
+setTimeout(()=>{
+
+toast.remove();
+
+},2500);
+
+}
+
+
+/* =========================
+   PAGE LOAD
+========================= */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+loadProducts();
+
+updateCartUI();
+
+checkUserLogin();
+
 });

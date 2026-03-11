@@ -1,89 +1,81 @@
 const mongoose = require("mongoose");
 
-const orderSchema = new mongoose.Schema(
-{
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+const OrderItemSchema = new mongoose.Schema({
+    productId: {
+        type: String,
+        required: true
     },
+    name: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        min: 1
+    },
+    image: {
+        type: String
+    }
+});
 
+const OrderSchema = new mongoose.Schema({
     userName: {
         type: String,
-        required: true,
-        trim: true
+        required: true
     },
-
     userEmail: {
         type: String,
-        required: true,
-        lowercase: true,
-        match: [/^\S+@\S+\.\S+$/, "Invalid email"]
+        required: true
     },
-
     address: {
         type: String,
         required: true
     },
-
     phone: {
         type: String,
         required: true
     },
-
-    items: [
-        {
-            product: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Product"
-            },
-
-            name: {
-                type: String,
-                required: true
-            },
-
-            price: {
-                type: Number,
-                required: true
-            },
-
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1
-            }
-        }
-    ],
-
+    items: [OrderItemSchema],
+    subtotal: {
+        type: Number
+    },
+    tax: {
+        type: Number,
+        default: 0
+    },
+    delivery: {
+        type: Number,
+        default: 0
+    },
     total: {
         type: Number,
-        required: true,
-        min: 0
+        required: true
     },
-
     status: {
         type: String,
-        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
-        default: "Pending"
+        enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+        default: "pending"
     },
-
     paymentMethod: {
         type: String,
-        default: "Cash on Delivery"
+        enum: ["cod", "card", "upi"],
+        default: "cod"
     },
-
-    isPaid: {
-        type: Boolean,
-        default: false
+    notes: {
+        type: String
     },
-
-    paidAt: {
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
         type: Date
     }
-
-},
-{
-    timestamps: true
 });
 
-module.exports = mongoose.model("Order", orderSchema);
+module.exports = mongoose.model("Order", OrderSchema);

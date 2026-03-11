@@ -7,20 +7,15 @@ google.charts.load('current', { packages: ['corechart'] });
 
 document.addEventListener("DOMContentLoaded", () => {
 
-const role = localStorage.getItem("userRole");
+    const role = localStorage.getItem("userRole");
 
-if(role !== "admin"){
+    if (role !== "admin") {
+        alert("❌ Access Denied");
+        window.location.href = "login.html";
+        return;
+    }
 
-alert("❌ Access Denied");
-
-window.location.href = "login.html";
-
-return;
-
-}
-
-loadAdminData();
-
+    loadAdminData();
 });
 
 
@@ -28,121 +23,119 @@ loadAdminData();
    2. LOAD ADMIN DATA
 ========================== */
 
-async function loadAdminData(){
+async function loadAdminData() {
 
-try{
+    try {
 
-const res = await fetch("/adminData");
+        const res = await fetch("/adminData");
+        const data = await res.json();
 
-const data = await res.json();
+        /* ---------- STATS ---------- */
 
+        const users = document.getElementById("total-users");
+        const products = document.getElementById("total-products");
+        const revenueEl = document.getElementById("total-revenue");
 
-/* ---------- STATS ---------- */
+        if (users) users.innerText = data.users.length;
+        if (products) products.innerText = data.products.length;
 
-document.getElementById("total-users").innerText = data.users.length;
+        const revenue = data.orders.reduce((sum, o) => sum + o.total, 0);
 
-document.getElementById("total-products").innerText = data.products.length;
-
-const revenue = data.orders.reduce((sum,o)=> sum + o.total ,0);
-
-document.getElementById("total-revenue").innerText = "$" + revenue.toFixed(2);
-
-
-/* ---------- PRODUCT TABLE ---------- */
-
-const pBody = document.getElementById("inventory-table");
-
-if(pBody){
-
-pBody.innerHTML = data.products.map(p=>`
-
-<tr class="hover:bg-gray-50">
-
-<td class="p-3">
-<img src="${p.image}" class="w-12 h-12 rounded object-cover">
-</td>
-
-<td class="p-3 font-medium">${p.name}</td>
-
-<td class="p-3 text-teal-700 font-semibold">
-$${p.price.toFixed(2)}
-</td>
-
-<td class="p-3">
-<span class="px-2 py-1 bg-teal-100 text-teal-700 rounded text-xs">
-${p.category}
-</span>
-</td>
-
-<td class="p-3">
-<button onclick="deleteProduct('${p._id}')"
-class="text-red-500 hover:text-red-700">
-<i class="fas fa-trash"></i>
-</button>
-</td>
-
-</tr>
-
-`).join("");
-
-}
+        if (revenueEl) revenueEl.innerText = "$" + revenue.toFixed(2);
 
 
-/* ---------- ORDER TABLE ---------- */
+        /* ---------- PRODUCT TABLE ---------- */
 
-const oBody = document.getElementById("orders-table");
+        const pBody = document.getElementById("inventory-table");
 
-if(oBody){
+        if (pBody) {
 
-oBody.innerHTML = data.orders.map(o=>`
+            pBody.innerHTML = data.products.map(p => `
+            
+            <tr class="hover:bg-gray-50">
 
-<tr class="hover:bg-gray-50">
+                <td class="p-3">
+                    <img src="${p.image}" class="w-12 h-12 rounded object-cover">
+                </td>
 
-<td class="p-3">
-<strong>${o.userName}</strong><br>
-<small>${o.phone || "No Phone"}</small>
-</td>
+                <td class="p-3 font-medium">${p.name}</td>
 
-<td class="p-3 text-sm max-w-xs">
-${o.address || "No Address"}
-</td>
+                <td class="p-3 text-teal-700 font-semibold">
+                    $${p.price.toFixed(2)}
+                </td>
 
-<td class="p-3 text-sm">
-${o.items.map(i=>i.name).join(", ")}
-</td>
+                <td class="p-3">
+                    <span class="px-2 py-1 bg-teal-100 text-teal-700 rounded text-xs">
+                        ${p.category}
+                    </span>
+                </td>
 
-<td class="p-3 font-semibold text-teal-700">
-$${o.total.toFixed(2)}
-</td>
+                <td class="p-3">
+                    <button onclick="deleteProduct('${p._id}')"
+                    class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-trash"></i>
+                    </button>
+                </td>
 
-<td class="p-3">
-<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">
-${o.status || "Pending"}
-</span>
-</td>
+            </tr>
 
-</tr>
+            `).join("");
 
-`).join("");
-
-}
+        }
 
 
-/* ---------- DRAW SALES CHART ---------- */
+        /* ---------- ORDERS TABLE ---------- */
 
-if(data.orders.length > 0){
+        const oBody = document.getElementById("orders-table");
 
-drawChart(data.orders);
+        if (oBody) {
 
-}
+            oBody.innerHTML = data.orders.map(o => `
 
-}catch(err){
+            <tr class="hover:bg-gray-50">
 
-console.error("Dashboard error:",err);
+                <td class="p-3">
+                    <strong>${o.userName}</strong><br>
+                    <small>${o.phone || "No Phone"}</small>
+                </td>
 
-alert("Failed to load admin data");
+                <td class="p-3 text-sm max-w-xs">
+                    ${o.address || "No Address"}
+                </td>
 
-}
+                <td class="p-3 text-sm">
+                    ${o.items.map(i => i.name).join(", ")}
+                </td>
+
+                <td class="p-3 font-semibold text-teal-700">
+                    $${o.total.toFixed(2)}
+                </td>
+
+                <td class="p-3">
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">
+                        ${o.status || "Pending"}
+                    </span>
+                </td>
+
+            </tr>
+
+            `).join("");
+
+        }
+
+
+        /* ---------- SALES CHART ---------- */
+
+        if (data.orders.length > 0) {
+            drawChart(data.orders);
+        }
+
+    } catch (err) {
+
+        console.error("Dashboard error:", err);
+        alert("Failed to load admin data");
+
+    }
 
 }
 
@@ -151,60 +144,48 @@ alert("Failed to load admin data");
    3. SALES CHART
 ========================== */
 
-function drawChart(orders){
+function drawChart(orders) {
 
-const chartData = [["Date","Revenue"]];
+    const chartData = [["Date", "Revenue"]];
 
-const grouped = {};
+    const grouped = {};
 
-orders.forEach(order=>{
+    orders.forEach(order => {
 
-const date = new Date(order.createdAt || Date.now()).toLocaleDateString();
+        const date = new Date(order.createdAt || Date.now()).toLocaleDateString();
 
-grouped[date] = (grouped[date] || 0) + order.total;
+        grouped[date] = (grouped[date] || 0) + order.total;
 
-});
+    });
 
-for(let date in grouped){
+    for (let date in grouped) {
+        chartData.push([date, grouped[date]]);
+    }
 
-chartData.push([date, grouped[date]]);
+    google.charts.setOnLoadCallback(() => {
 
-}
+        const data = google.visualization.arrayToDataTable(chartData);
 
-google.charts.setOnLoadCallback(()=>{
+        const options = {
+            title: "Daily Sales Performance",
+            curveType: "function",
+            legend: { position: "bottom" },
+            colors: ["#004D4D"],
+            backgroundColor: "transparent",
+            chartArea: { width: "80%", height: "70%" }
+        };
 
-const data = google.visualization.arrayToDataTable(chartData);
+        const chartElement = document.getElementById("salesChart");
 
-const options = {
+        if (chartElement) {
 
-title:"Daily Sales Performance",
+            const chart = new google.visualization.LineChart(chartElement);
 
-curveType:"function",
+            chart.draw(data, options);
 
-legend:{ position:"bottom" },
+        }
 
-colors:["#004D4D"],
-
-backgroundColor:"transparent",
-
-chartArea:{
-width:"80%",
-height:"70%"
-}
-
-};
-
-const chartElement = document.getElementById("salesChart");
-
-if(chartElement){
-
-const chart = new google.visualization.LineChart(chartElement);
-
-chart.draw(data,options);
-
-}
-
-});
+    });
 
 }
 
@@ -215,61 +196,57 @@ chart.draw(data,options);
 
 const productForm = document.getElementById("add-product-form");
 
-if(productForm){
+if (productForm) {
 
-productForm.addEventListener("submit", async (e)=>{
+    productForm.addEventListener("submit", async (e) => {
 
-e.preventDefault();
+        e.preventDefault();
 
-const pData = {
+        const pData = {
 
-name: document.getElementById("pName").value,
+            name: document.getElementById("pName").value,
+            price: parseFloat(document.getElementById("pPrice").value),
+            image: document.getElementById("pImage").value,
+            category: document.getElementById("pCategory").value,
+            description: document.getElementById("pDesc").value
 
-price: parseFloat(document.getElementById("pPrice").value),
+        };
 
-image: document.getElementById("pImage").value,
+        try {
 
-category: document.getElementById("pCategory").value,
+            const res = await fetch("/addProduct", {
 
-description: document.getElementById("pDesc").value
+                method: "POST",
 
-};
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-try{
+                body: JSON.stringify(pData)
 
-const res = await fetch("/addProduct",{
+            });
 
-method:"POST",
+            if (res.ok) {
 
-headers:{
-"Content-Type":"application/json"
-},
+                alert("✅ Product Added Successfully");
 
-body: JSON.stringify(pData)
+                productForm.reset();
 
-});
+                loadAdminData();
 
-if(res.ok){
+            } else {
 
-alert("✅ Product Added Successfully");
+                alert("❌ Failed to add product");
 
-productForm.reset();
+            }
 
-loadAdminData();
+        } catch (err) {
 
-}else{
+            console.error(err);
 
-alert("❌ Failed to add product");
+        }
 
-}
-
-}catch(err){
-
-console.error(err);
-
-}
-
-});
+    });
 
 }
 
@@ -278,31 +255,31 @@ console.error(err);
    5. DELETE PRODUCT
 ========================== */
 
-async function deleteProduct(id){
+async function deleteProduct(id) {
 
-if(!confirm("⚠ Are you sure you want to delete this product?")) return;
+    if (!confirm("⚠ Are you sure you want to delete this product?")) return;
 
-try{
+    try {
 
-const res = await fetch(`/deleteProduct/${id}`,{
-method:"DELETE"
-});
+        const res = await fetch(`/deleteProduct/${id}`, {
+            method: "DELETE"
+        });
 
-if(res.ok){
+        if (res.ok) {
 
-loadAdminData();
+            loadAdminData();
 
-}else{
+        } else {
 
-alert("Delete failed");
+            alert("Delete failed");
 
-}
+        }
 
-}catch(err){
+    } catch (err) {
 
-console.error(err);
+        console.error(err);
 
-}
+    }
 
 }
 
@@ -311,16 +288,16 @@ console.error(err);
    6. LOGOUT
 ========================== */
 
-function logout(){
+function logout() {
 
-if(confirm("Logout from Admin Panel?")){
+    if (confirm("Logout from Admin Panel?")) {
 
-localStorage.removeItem("userName");
-localStorage.removeItem("userEmail");
-localStorage.removeItem("userRole");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userRole");
 
-window.location.href="login.html";
+        window.location.href = "login.html";
 
-}
+    }
 
 }

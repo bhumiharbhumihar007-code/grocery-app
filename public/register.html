@@ -46,21 +46,17 @@ body{font-family:'Inter',sans-serif;}
 
 <div class="text-center mb-8">
 
-<h1 class="text-3xl font-black tracking-tight text-tealMain">
+<h1 class="text-3xl font-black text-tealMain">
 Fresh<span class="text-copper">Mart</span>
 </h1>
 
-<div class="mt-4">
-
-<h2 class="text-2xl font-bold">
+<h2 class="text-2xl font-bold mt-4">
 Create Account
 </h2>
 
-<p class="text-gray-500 mt-1">
-Join our wellness community
+<p class="text-gray-500">
+Join our store today
 </p>
-
-</div>
 
 </div>
 
@@ -110,7 +106,7 @@ Password
 <input
 type="password"
 id="regPass"
-placeholder="Create a strong password"
+placeholder="Create a password"
 class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-tealMain outline-none"
 required>
 
@@ -128,7 +124,7 @@ required>
 <label for="terms" class="text-xs text-gray-500">
 
 I agree to the
-<a href="#" class="text-tealMain underline">Terms & Conditions</a>
+<span class="text-tealMain underline">Terms & Conditions</span>
 
 </label>
 
@@ -138,7 +134,7 @@ I agree to the
 <button
 type="submit"
 id="submit-btn"
-class="w-full bg-copper hover:opacity-90 text-white font-bold py-4 rounded-xl transition active:scale-[0.98] mt-2">
+class="w-full bg-copper text-white font-bold py-4 rounded-xl hover:opacity-90">
 
 Register Now
 
@@ -151,9 +147,10 @@ Register Now
 
 <p>
 
-Already a member?
+Already have an account?
 
-<a href="login.html" class="text-tealMain font-bold hover:underline">
+<a href="login.html"
+class="text-tealMain font-bold hover:underline">
 
 Login here
 
@@ -168,50 +165,69 @@ Login here
 </div>
 
 
+
 <script>
 
 document.getElementById('register-form').addEventListener('submit', async (e)=>{
 
 e.preventDefault();
 
-const submitBtn=document.getElementById('submit-btn');
+const btn = document.getElementById("submit-btn");
 
-const originalText=submitBtn.innerText;
+const originalText = btn.innerText;
 
-submitBtn.innerText="Creating Account...";
-submitBtn.disabled=true;
+btn.innerText = "Creating Account...";
+btn.disabled = true;
 
-const userData={
+const userData = {
 
-name:document.getElementById('regName').value,
-email:document.getElementById('regEmail').value,
-password:document.getElementById('regPass').value
+name: document.getElementById('regName').value,
+email: document.getElementById('regEmail').value,
+password: document.getElementById('regPass').value
 
 };
 
+
+if(userData.password.length < 6){
+
+alert("Password must be at least 6 characters");
+
+btn.innerText = originalText;
+btn.disabled = false;
+
+return;
+
+}
+
+
 try{
 
-const res=await fetch('/register',{
+const res = await fetch('/register',{
 
 method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify(userData)
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body: JSON.stringify(userData)
 
 });
 
+const data = await res.json();
+
 if(res.ok){
 
-alert("Account Created Successfully!");
+alert("Account created successfully!");
 
-window.location.href="login.html";
+window.location.href = "login.html";
 
 }else{
 
-const errorData=await res.json();
+alert(data.error || "Registration failed");
 
-alert(errorData.error || "Registration Failed");
-
-resetBtn();
+btn.innerText = originalText;
+btn.disabled = false;
 
 }
 
@@ -221,20 +237,15 @@ console.error(err);
 
 alert("Server connection failed");
 
-resetBtn();
-
-}
-
-function resetBtn(){
-
-submitBtn.innerText=originalText;
-submitBtn.disabled=false;
+btn.innerText = originalText;
+btn.disabled = false;
 
 }
 
 });
 
 </script>
+
 
 </body>
 </html>

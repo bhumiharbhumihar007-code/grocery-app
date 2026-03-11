@@ -1,106 +1,738 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Secure Checkout | FreshMart</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sand: "#F5F2ED",
+                        tealMain: "#004D4D",
+                        tealLight: "#006666",
+                        tealDark: "#003333",
+                        copper: "#B87333",
+                        charcoal: "#2B2B2B",
+                        sage: "#8A9A5B"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
 
-<title>Checkout | FreshMart</title>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
 
-<script src="https://cdn.tailwindcss.com"></script>
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
 
-<script>
-tailwind.config = {
-theme: {
-extend: {
-colors: {
-sand: "#F5F2ED",
-tealMain: "#004D4D",
-copper: "#B87333",
-charcoal: "#2B2B2B"
-}
-}
-}
-}
-</script>
+        ::-webkit-scrollbar-thumb {
+            background: #004D4D;
+            border-radius: 10px;
+        }
 
+        ::-webkit-scrollbar-thumb:hover {
+            background: #003333;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .checkout-item {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #004D4D;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.warning { background: #f59e0b; }
+        .toast.info { background: #3b82f6; }
+
+        /* Form validation */
+        .input-error {
+            border: 2px solid #ef4444 !important;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Progress steps */
+        .progress-step {
+            position: relative;
+            flex: 1;
+            text-align: center;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #e5e7eb;
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+
+        .progress-step.active .step-number {
+            background: #004D4D;
+            color: white;
+            border-color: #004D4D;
+        }
+
+        .progress-step.completed .step-number {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 8px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        /* Payment methods */
+        .payment-method {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .payment-method:hover {
+            border-color: #004D4D;
+            background: #f8f9fa;
+        }
+
+        .payment-method.selected {
+            border-color: #004D4D;
+            background: #f0f7f7;
+        }
+
+        .payment-method.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: #004D4D;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* Touch-friendly improvements */
+        button, .clickable {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        input, select, textarea {
+            font-size: 16px !important; /* Prevents zoom on mobile */
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 640px) {
+            .checkout-container {
+                padding: 1rem !important;
+                margin: 0.5rem !important;
+                border-radius: 12px !important;
+            }
+
+            .order-summary {
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </head>
 
+<body class="bg-sand min-h-screen flex items-center justify-center p-2 md:p-4 font-sans antialiased">
+    <!-- Toast container for notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
-<body class="bg-sand min-h-screen flex items-center justify-center p-4">
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 text-center max-w-sm mx-4">
+            <div class="loading-spinner mx-auto" style="width: 48px; height: 48px;"></div>
+            <p class="mt-4 text-gray-600 font-medium">Processing your order...</p>
+            <p class="text-sm text-gray-500 mt-2">Please don't close this window</p>
+        </div>
+    </div>
 
-<div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-3xl">
+    <!-- Main Checkout Container -->
+    <div class="bg-white shadow-2xl rounded-xl md:rounded-2xl p-4 md:p-8 w-full max-w-6xl checkout-container">
+        <!-- Header with progress -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-tealMain">
+                    <i class="fas fa-lock text-sm mr-2 text-sage"></i>
+                    Secure Checkout
+                </h1>
+                <a href="cart.html" class="text-tealMain hover:text-tealLight transition flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span class="hidden sm:inline">Back to Cart</span>
+                </a>
+            </div>
 
-<h1 class="text-2xl md:text-3xl font-bold text-tealMain mb-6">
-Checkout
-</h1>
+            <!-- Progress Steps -->
+            <div class="flex justify-between items-center mb-8 px-0 md:px-8">
+                <div class="progress-step active">
+                    <div class="step-number">1</div>
+                    <div class="text-xs md:text-sm font-medium">Cart</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="step-number">2</div>
+                    <div class="text-xs md:text-sm font-medium">Checkout</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="text-xs md:text-sm font-medium">Payment</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="text-xs md:text-sm font-medium">Confirmation</div>
+                </div>
+            </div>
 
+            <!-- Login/Register Prompt (shown if not logged in) -->
+            <div id="login-message" class="mb-6 hidden">
+                <!-- Dynamic content from JS -->
+            </div>
+        </div>
 
-<!-- CART ITEMS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            <!-- Left Column - Form -->
+            <div class="lg:col-span-2">
+                <!-- Cart Items Summary -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-charcoal flex items-center gap-2">
+                            <i class="fas fa-shopping-cart text-tealMain"></i>
+                            Your Items
+                        </h2>
+                        <span class="text-sm text-gray-500" id="item-count">0 items</span>
+                    </div>
+                    
+                    <div id="checkout-items" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+                </div>
 
-<div id="checkout-items"
-class="space-y-4 mb-6 max-h-60 overflow-y-auto">
-</div>
+                <!-- Shipping Information Form -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-charcoal mb-4 flex items-center gap-2">
+                        <i class="fas fa-truck text-tealMain"></i>
+                        Shipping Information
+                    </h2>
 
+                    <form id="checkout-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Full Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    <i class="fas fa-user mr-2 text-tealMain"></i>Full Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    id="custName"
+                                    placeholder="John Doe"
+                                    required
+                                    class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none transition"
+                                />
+                                <div id="error-custName" class="error-message hidden"></div>
+                            </div>
 
-<!-- TOTAL -->
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    <i class="fas fa-envelope mr-2 text-tealMain"></i>Email Address *
+                                </label>
+                                <input
+                                    type="email"
+                                    id="custEmail"
+                                    placeholder="john@example.com"
+                                    required
+                                    class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none transition"
+                                />
+                                <div id="error-custEmail" class="error-message hidden"></div>
+                            </div>
 
-<div class="flex justify-between items-center text-xl font-bold mb-6 border-t pt-4">
+                            <!-- Phone -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    <i class="fas fa-phone mr-2 text-tealMain"></i>Phone Number *
+                                </label>
+                                <input
+                                    type="tel"
+                                    id="custPhone"
+                                    placeholder="9876543210"
+                                    required
+                                    maxlength="10"
+                                    pattern="[0-9]{10}"
+                                    class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none transition"
+                                />
+                                <div id="error-custPhone" class="error-message hidden"></div>
+                            </div>
 
-<span>Total</span>
+                            <!-- Alternative Phone (Optional) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    <i class="fas fa-phone-alt mr-2 text-gray-400"></i>Alternate Phone
+                                </label>
+                                <input
+                                    type="tel"
+                                    id="custAltPhone"
+                                    placeholder="Optional"
+                                    maxlength="10"
+                                    class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none transition"
+                                />
+                            </div>
+                        </div>
 
-<span id="checkout-total" class="text-copper">$0</span>
+                        <!-- Address -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <i class="fas fa-map-marker-alt mr-2 text-tealMain"></i>Delivery Address *
+                            </label>
+                            <textarea
+                                id="custAddress"
+                                placeholder="House No., Street, Landmark, City, State - PIN Code"
+                                required
+                                rows="3"
+                                class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none transition resize-none"
+                            ></textarea>
+                            <div id="error-custAddress" class="error-message hidden"></div>
+                        </div>
 
-</div>
+                        <!-- Delivery Instructions (Optional) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <i class="fas fa-clipboard-list mr-2 text-gray-400"></i>Delivery Instructions (Optional)
+                            </label>
+                            <textarea
+                                id="delivery-instructions"
+                                placeholder="E.g., Leave at door, Call on arrival, etc."
+                                rows="2"
+                                class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none transition resize-none"
+                            ></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
+            <!-- Right Column - Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-gray-50 rounded-xl p-6 sticky top-6 order-summary">
+                    <h2 class="text-xl font-bold text-charcoal mb-4 flex items-center gap-2">
+                        <i class="fas fa-receipt text-tealMain"></i>
+                        Order Summary
+                    </h2>
 
-<!-- FORM -->
+                    <!-- Summary Details -->
+                    <div class="space-y-3 mb-6" id="order-summary">
+                        <!-- Dynamic content from JS -->
+                    </div>
 
-<form id="checkout-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Coupon Code -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tag mr-2 text-tealMain"></i>Have a coupon?
+                        </label>
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="coupon-code"
+                                placeholder="Enter code"
+                                class="flex-1 border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-tealMain focus:border-tealMain outline-none text-sm"
+                            />
+                            <button
+                                onclick="applyCoupon()"
+                                class="bg-tealMain text-white px-4 py-2 rounded-lg hover:bg-tealLight transition text-sm font-medium"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                        <div id="coupon-message" class="text-sm mt-2 hidden"></div>
+                    </div>
 
-<input
-id="custName"
-placeholder="Full Name"
-required
-class="border p-3 rounded focus:ring-2 focus:ring-tealMain outline-none"
-/>
+                    <!-- Payment Methods -->
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-charcoal mb-3 flex items-center gap-2">
+                            <i class="fas fa-credit-card text-tealMain"></i>
+                            Payment Method
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="payment-method selected" onclick="selectPaymentMethod('cod')">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-money-bill-wave text-2xl text-tealMain"></i>
+                                    <div>
+                                        <p class="font-medium">Cash on Delivery</p>
+                                        <p class="text-xs text-gray-500">Pay when you receive</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('card')">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-credit-card text-2xl text-tealMain"></i>
+                                    <div>
+                                        <p class="font-medium">Credit/Debit Card</p>
+                                        <p class="text-xs text-gray-500">Secure payment</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('upi')">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-mobile-alt text-2xl text-tealMain"></i>
+                                    <div>
+                                        <p class="font-medium">UPI</p>
+                                        <p class="text-xs text-gray-500">Google Pay, PhonePe, etc.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="payment-method" value="cod">
+                    </div>
 
-<input
-id="custEmail"
-placeholder="Email"
-required
-class="border p-3 rounded focus:ring-2 focus:ring-tealMain outline-none"
-/>
+                    <!-- Place Order Button -->
+                    <button
+                        type="submit"
+                        form="checkout-form"
+                        class="w-full bg-gradient-to-r from-tealMain to-tealLight text-white py-4 rounded-xl 
+                               font-bold text-lg hover:from-tealLight hover:to-tealMain transition 
+                               transform hover:scale-105 active:scale-95 shadow-lg flex items-center 
+                               justify-center gap-2 pulse-animation"
+                        id="place-order-btn"
+                    >
+                        <i class="fas fa-lock"></i>
+                        Place Order
+                    </button>
 
-<input
-id="custPhone"
-placeholder="Phone"
-required
-class="border p-3 rounded focus:ring-2 focus:ring-tealMain outline-none"
-/>
+                    <!-- Security Badge -->
+                    <div class="mt-4 text-center text-xs text-gray-500">
+                        <i class="fas fa-shield-alt text-tealMain mr-1"></i>
+                        Your information is secure and encrypted
+                    </div>
 
-<textarea
-id="custAddress"
-placeholder="Address"
-required
-class="border p-3 rounded md:col-span-2 focus:ring-2 focus:ring-tealMain outline-none">
-</textarea>
+                    <!-- Trust Badges -->
+                    <div class="mt-4 flex justify-center gap-4">
+                        <img src="https://via.placeholder.com/40x25" alt="Visa" class="h-6 opacity-50 grayscale">
+                        <img src="https://via.placeholder.com/40x25" alt="Mastercard" class="h-6 opacity-50 grayscale">
+                        <img src="https://via.placeholder.com/40x25" alt="Rupay" class="h-6 opacity-50 grayscale">
+                        <img src="https://via.placeholder.com/40x25" alt="UPI" class="h-6 opacity-50 grayscale">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<button
-type="submit"
-class="md:col-span-2 w-full bg-tealMain text-white py-3 rounded-lg font-semibold hover:opacity-90 transition">
+        <!-- Footer -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-tealMain transition">Help</a>
+                    <a href="#" class="hover:text-tealMain transition">Terms</a>
+                    <a href="#" class="hover:text-tealMain transition">Privacy</a>
+                </div>
+                <div>
+                    <i class="fas fa-credit-card mr-2"></i>
+                    <span>100% Secure Checkout</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-Place Order
+    <!-- Order Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center transform animate-slideUp">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check text-4xl text-green-500"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-charcoal mb-2">Order Placed Successfully!</h2>
+            <p class="text-gray-600 mb-6">Your order has been confirmed and will be delivered soon.</p>
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <p class="text-sm text-gray-600 mb-1">Order ID</p>
+                <p id="order-id-display" class="font-mono font-bold text-tealMain text-lg">#FRESH123456</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="orders.html" 
+                   class="flex-1 bg-tealMain text-white py-3 rounded-lg hover:bg-tealLight transition">
+                    Track Order
+                </a>
+                <a href="index.html" 
+                   class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
 
-</button>
+    <script src="checkout.js"></script>
+    <script>
+        // Additional UI enhancements
+        function selectPaymentMethod(method) {
+            // Remove selected class from all
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked
+            event.currentTarget.classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('payment-method').value = method;
+            
+            // Show toast
+            showToast(`Payment method: ${method.toUpperCase()}`, 'info');
+        }
 
-</form>
+        function applyCoupon() {
+            const coupon = document.getElementById('coupon-code').value;
+            const messageDiv = document.getElementById('coupon-message');
+            
+            if (!coupon) {
+                showToast('Please enter a coupon code', 'warning');
+                return;
+            }
+            
+            // Simulate coupon validation
+            if (coupon.toUpperCase() === 'FRESH10') {
+                messageDiv.className = 'text-sm mt-2 text-green-600';
+                messageDiv.textContent = '✓ 10% discount applied!';
+                messageDiv.classList.remove('hidden');
+                showToast('Coupon applied successfully!', 'success');
+                
+                // Update total (this would be handled by JS)
+                updateTotalWithDiscount(10);
+            } else {
+                messageDiv.className = 'text-sm mt-2 text-red-600';
+                messageDiv.textContent = '✗ Invalid coupon code';
+                messageDiv.classList.remove('hidden');
+                showToast('Invalid coupon code', 'error');
+            }
+        }
 
-</div>
+        function updateTotalWithDiscount(discountPercent) {
+            // This would integrate with your checkout.js
+            const totalElement = document.getElementById('checkout-total');
+            if (totalElement) {
+                const currentTotal = parseFloat(totalElement.textContent.replace('₹', ''));
+                const discount = (currentTotal * discountPercent) / 100;
+                const newTotal = currentTotal - discount;
+                totalElement.textContent = '₹' + newTotal.toFixed(2);
+            }
+        }
 
-<script src="checkout.js"></script>
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
 
+        // Auto-fill demo data (for testing)
+        function fillDemoData() {
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                document.getElementById('custName').value = 'John Doe';
+                document.getElementById('custEmail').value = 'john@example.com';
+                document.getElementById('custPhone').value = '9876543210';
+                document.getElementById('custAddress').value = '123 Main Street, Apartment 4B, New York, NY 10001';
+            }
+        }
+
+        // Phone number formatting
+        document.getElementById('custPhone')?.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+
+        document.getElementById('custAltPhone')?.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+
+        // Email validation on blur
+        document.getElementById('custEmail')?.addEventListener('blur', function() {
+            const email = this.value;
+            const errorDiv = document.getElementById('error-custEmail');
+            
+            if (email && !isValidEmail(email)) {
+                this.classList.add('input-error');
+                errorDiv.textContent = 'Please enter a valid email address';
+                errorDiv.classList.remove('hidden');
+            } else {
+                this.classList.remove('input-error');
+                errorDiv.classList.add('hidden');
+            }
+        });
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Clear errors on input
+        document.querySelectorAll('input, textarea').forEach(field => {
+            field.addEventListener('input', function() {
+                this.classList.remove('input-error');
+                const errorDiv = document.getElementById(`error-${this.id}`);
+                if (errorDiv) errorDiv.classList.add('hidden');
+            });
+        });
+
+        // Call on load
+        document.addEventListener('DOMContentLoaded', function() {
+            fillDemoData();
+            
+            // Update item count
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            document.getElementById('item-count').textContent = 
+                cart.reduce((sum, item) => sum + item.quantity, 0) + ' items';
+        });
+
+        // Prevent double submission
+        document.getElementById('checkout-form')?.addEventListener('submit', function() {
+            const btn = document.getElementById('place-order-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            // Show loading overlay
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>

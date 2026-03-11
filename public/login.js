@@ -1,63 +1,41 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-const form = document.getElementById("login-form");
+    const email = document.getElementById("logEmail").value;
+    const password = document.getElementById("logPass").value;
 
-form.addEventListener("submit", async (e) => {
+    const btn = e.target.querySelector("button");
+    const originalText = btn.innerText;
+    btn.innerText = "Authenticating...";
+    btn.disabled = true;
 
-e.preventDefault();
+    try {
+        const res = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-const email = document.getElementById("logEmail").value;
-const password = document.getElementById("logPass").value;
+        const data = await res.json();
 
-try{
+        if (res.ok) {
+            // Save user data to localStorage including role
+            localStorage.setItem("userName", data.user.name);
+            localStorage.setItem("userEmail", data.user.email);
+            localStorage.setItem("userRole", data.user.role || "user"); // default role=user
 
-const res = await fetch("/login",{
+            // Redirect to homepage
+            window.location.href = "index.html";
+        } else {
+            alert(data.error || "Invalid login credentials");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
 
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body: JSON.stringify({ email, password })
-
-});
-
-const data = await res.json();
-
-if(res.ok){
-
-localStorage.setItem("userName", data.user.name);
-localStorage.setItem("userEmail", data.user.email);
-localStorage.setItem("userRole", data.user.role);
-
-
-/* Redirect based on role */
-
-if(data.user.role === "admin"){
-
-window.location.href = "admin.html";
-
-}else{
-
-window.location.href = "index.html";
-
-}
-
-}else{
-
-alert(data.error || "Login failed");
-
-}
-
-}catch(err){
-
-console.error("Login error:", err);
-
-alert("Server error. Please try again.");
-
-}
-
-});
-
+    } catch (err) {
+        console.error("Login Error:", err);
+        alert("Server connection failed!");
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 });

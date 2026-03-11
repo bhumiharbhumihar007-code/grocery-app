@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard | MediCare Pharmacy</title>
+
+<title>Admin Dashboard | FreshMart</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script>
@@ -26,49 +30,73 @@ charcoal:"#2B2B2B"
 
 </head>
 
-<body class="bg-sand text-charcoal font-sans antialiased">
+<body class="bg-sand text-charcoal font-sans">
 
 <div class="flex min-h-screen">
 
-<!-- Sidebar -->
+<!-- MOBILE MENU BUTTON -->
 
-<aside class="w-64 bg-teal text-white flex-shrink-0 hidden md:flex flex-col">
+<button onclick="toggleSidebar()"
+class="md:hidden fixed top-4 left-4 z-50 bg-teal text-white p-2 rounded">
+
+<i class="fas fa-bars"></i>
+
+</button>
+
+<!-- SIDEBAR -->
+
+<aside id="sidebar"
+class="w-64 bg-teal text-white fixed md:static h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col">
 
 <div class="p-6 text-2xl font-bold border-b border-teal-800">
-<span class="text-sage">Medi</span>Care
+
+<span class="text-sage">Fresh</span>Mart
 <span class="text-sm text-sand">Admin</span>
+
 </div>
 
 <nav class="flex-1 p-4 space-y-2">
 
-<a href="#stats" class="flex items-center space-x-3 p-3 rounded-lg bg-sage text-white">
-<i class="fas fa-chart-line w-5"></i>
+<a href="#stats"
+class="flex items-center space-x-3 p-3 rounded-lg bg-sage">
+
+<i class="fas fa-chart-line"></i>
 <span>Dashboard</span>
+
 </a>
 
-<a href="#inventory" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
-<i class="fas fa-boxes w-5"></i>
+<a href="#inventory"
+class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700">
+
+<i class="fas fa-boxes"></i>
 <span>Inventory</span>
+
 </a>
 
-<a href="#orders" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition">
-<i class="fas fa-shopping-bag w-5"></i>
+<a href="#orders"
+class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700">
+
+<i class="fas fa-shopping-bag"></i>
 <span>Orders</span>
+
 </a>
 
-<a href="index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 transition border-t border-teal-800 mt-4">
-<i class="fas fa-eye w-5"></i>
+<a href="index.html"
+class="flex items-center space-x-3 p-3 rounded-lg hover:bg-teal-700 border-t border-teal-800 mt-4">
+
+<i class="fas fa-eye"></i>
 <span>View Site</span>
+
 </a>
 
 </nav>
 
 <div class="p-4 border-t border-teal-800">
 
-<button onclick="logout()" class="w-full flex items-center justify-center space-x-2 bg-red-100 text-red-600 p-3 rounded-lg hover:bg-red-500 hover:text-white transition">
+<button onclick="logout()"
+class="w-full bg-red-500 hover:bg-red-600 p-2 rounded">
 
-<i class="fas fa-sign-out-alt"></i>
-<span>Logout</span>
+Logout
 
 </button>
 
@@ -76,125 +104,133 @@ charcoal:"#2B2B2B"
 
 </aside>
 
-<!-- Main -->
+<!-- MAIN -->
 
-<main class="flex-1 flex flex-col min-w-0">
+<main class="flex-1 md:ml-0 p-4 md:p-6">
 
-<header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
+<header class="bg-white p-4 rounded shadow flex justify-between items-center">
 
-<h2 class="text-xl font-bold text-teal">
-Admin Control Center
-</h2>
+<h1 class="text-xl font-bold text-teal">
+Admin Dashboard
+</h1>
 
-<div id="admin-name" class="flex items-center space-x-2 font-medium">
+<div class="flex items-center gap-2">
 
-<div class="w-8 h-8 bg-sage text-white rounded-full flex items-center justify-center">
-
-<i class="fas fa-user-shield"></i>
-
-</div>
-
-<span>Welcome, Admin</span>
+<i class="fas fa-user-shield text-teal"></i>
+<span>Admin</span>
 
 </div>
 
 </header>
 
-<div class="p-6 space-y-8">
+<div class="space-y-8 mt-6">
 
-<!-- Stats -->
+<!-- STATS -->
 
-<section id="stats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<section id="stats"
+class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-<div class="bg-white p-6 rounded-xl shadow flex items-center space-x-4">
+<div class="bg-white p-5 rounded shadow flex items-center gap-4">
 
-<div class="p-4 bg-teal text-white rounded-lg">
-<i class="fas fa-users text-2xl"></i>
-</div>
+<i class="fas fa-users text-2xl text-teal"></i>
 
 <div>
-<p class="text-sm text-gray-500 uppercase font-semibold">
-Total Users
+
+<p class="text-gray-500 text-sm">
+Users
 </p>
-<h2 id="total-users" class="text-2xl font-bold">0</h2>
-</div>
+
+<h2 id="total-users" class="text-xl font-bold">
+0
+</h2>
 
 </div>
 
-<div class="bg-white p-6 rounded-xl shadow flex items-center space-x-4">
-
-<div class="p-4 bg-sage text-white rounded-lg">
-<i class="fas fa-box text-2xl"></i>
 </div>
+
+<div class="bg-white p-5 rounded shadow flex items-center gap-4">
+
+<i class="fas fa-box text-2xl text-sage"></i>
 
 <div>
-<p class="text-sm text-gray-500 uppercase font-semibold">
+
+<p class="text-gray-500 text-sm">
 Products
 </p>
-<h2 id="total-products" class="text-2xl font-bold">0</h2>
-</div>
+
+<h2 id="total-products" class="text-xl font-bold">
+0
+</h2>
 
 </div>
 
-<div class="bg-white p-6 rounded-xl shadow flex items-center space-x-4">
-
-<div class="p-4 bg-copper text-white rounded-lg">
-<i class="fas fa-dollar-sign text-2xl"></i>
 </div>
+
+<div class="bg-white p-5 rounded shadow flex items-center gap-4">
+
+<i class="fas fa-dollar-sign text-2xl text-copper"></i>
 
 <div>
-<p class="text-sm text-gray-500 uppercase font-semibold">
+
+<p class="text-gray-500 text-sm">
 Revenue
 </p>
-<h2 id="total-revenue" class="text-2xl font-bold">$0</h2>
+
+<h2 id="total-revenue" class="text-xl font-bold">
+$0
+</h2>
+
 </div>
 
 </div>
 
 </section>
 
-<!-- Add Product -->
+<!-- ADD PRODUCT -->
 
-<section id="inventory" class="bg-white rounded-xl shadow overflow-hidden">
+<section id="inventory"
+class="bg-white rounded shadow p-6">
 
-<div class="p-4 border-b bg-sand font-bold text-teal flex items-center space-x-2">
+<h2 class="text-lg font-bold text-teal mb-4">
+Add Product
+</h2>
 
-<i class="fas fa-plus-circle text-copper"></i>
-<span>Add New Product</span>
+<form id="add-product-form"
+class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-</div>
+<input type="text"
+id="pName"
+placeholder="Product Name"
+class="border p-2 rounded"
+required>
 
-<form id="add-product-form" class="p-6 space-y-4">
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<input type="text" id="pName" placeholder="Product Name"
-class="border p-2 rounded-lg focus:ring-2 focus:ring-teal outline-none" required>
-
-<input type="number" id="pPrice" placeholder="Price"
-class="border p-2 rounded-lg focus:ring-2 focus:ring-teal outline-none" required>
+<input type="number"
+id="pPrice"
+placeholder="Price"
+class="border p-2 rounded"
+required>
 
 <select id="pCategory"
-class="border p-2 rounded-lg focus:ring-2 focus:ring-teal outline-none bg-white">
+class="border p-2 rounded">
 
-<option>Medicine</option>
-<option>Vitamins</option>
-<option>Personal Care</option>
-<option>Medical Devices</option>
+<option>Fruits</option>
+<option>Vegetables</option>
+<option>Snacks</option>
+<option>Beverages</option>
 
 </select>
 
-<input type="text" id="pImage" placeholder="Image URL"
-class="border p-2 rounded-lg focus:ring-2 focus:ring-teal outline-none">
-
-</div>
+<input type="text"
+id="pImage"
+placeholder="Image URL"
+class="border p-2 rounded">
 
 <textarea id="pDesc"
-placeholder="Product Description"
-class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal outline-none h-24"></textarea>
+placeholder="Description"
+class="border p-2 rounded md:col-span-2 lg:col-span-4"></textarea>
 
-<button type="submit"
-class="bg-copper hover:bg-sage text-white px-6 py-2 rounded-lg font-bold transition">
+<button
+class="bg-teal text-white p-2 rounded hover:bg-teal-700 md:col-span-2 lg:col-span-1">
 
 Add Product
 
@@ -204,71 +240,64 @@ Add Product
 
 </section>
 
-<!-- Inventory Table -->
+<!-- INVENTORY TABLE -->
 
-<section class="bg-white rounded-xl shadow overflow-hidden">
+<section class="bg-white rounded shadow overflow-x-auto">
 
-<div class="p-4 border-b bg-sand font-bold text-teal">
-Current Inventory
-</div>
+<h2 class="p-4 font-bold text-teal">
+Inventory
+</h2>
 
-<div class="overflow-x-auto">
+<table class="w-full text-left">
 
-<table class="w-full text-left border-collapse">
+<thead class="bg-gray-100">
 
-<thead>
+<tr>
 
-<tr class="bg-sand text-charcoal uppercase text-xs">
-
-<th class="p-4">Image</th>
-<th class="p-4">Name</th>
-<th class="p-4">Price</th>
-<th class="p-4">Category</th>
-<th class="p-4">Action</th>
+<th class="p-3">Image</th>
+<th class="p-3">Name</th>
+<th class="p-3">Price</th>
+<th class="p-3">Category</th>
+<th class="p-3">Action</th>
 
 </tr>
 
 </thead>
 
-<tbody id="inventory-table" class="divide-y"></tbody>
+<tbody id="inventory-table"></tbody>
 
 </table>
-
-</div>
 
 </section>
 
-<!-- Orders -->
+<!-- ORDERS -->
 
-<section id="orders" class="bg-white rounded-xl shadow overflow-hidden">
+<section id="orders"
+class="bg-white rounded shadow overflow-x-auto">
 
-<div class="p-4 border-b bg-sand font-bold text-teal">
-Recent Orders
-</div>
+<h2 class="p-4 font-bold text-teal">
+Orders
+</h2>
 
-<div class="overflow-x-auto">
+<table class="w-full text-left">
 
-<table class="w-full text-left border-collapse">
+<thead class="bg-gray-100">
 
-<thead>
+<tr>
 
-<tr class="bg-sand text-charcoal uppercase text-xs">
-
-<th class="p-4">Customer</th>
-<th class="p-4">Address</th>
-<th class="p-4">Items</th>
-<th class="p-4">Total</th>
-<th class="p-4">Status</th>
+<th class="p-3">Customer</th>
+<th class="p-3">Address</th>
+<th class="p-3">Items</th>
+<th class="p-3">Total</th>
+<th class="p-3">Status</th>
 
 </tr>
 
 </thead>
 
-<tbody id="orders-table" class="divide-y"></tbody>
+<tbody id="orders-table"></tbody>
 
 </table>
-
-</div>
 
 </section>
 
@@ -280,5 +309,18 @@ Recent Orders
 
 <script src="admin.js"></script>
 
+<script>
+
+function toggleSidebar(){
+
+const sidebar = document.getElementById("sidebar");
+
+sidebar.classList.toggle("-translate-x-full");
+
+}
+
+</script>
+
 </body>
+
 </html>

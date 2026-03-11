@@ -46,23 +46,19 @@ body{font-family:'Inter',sans-serif;}
 
 <div class="text-center mb-8">
 
-<h1 class="text-3xl font-black tracking-tight text-tealMain">
+<h1 class="text-3xl font-black text-tealMain">
 
 Fresh<span class="text-copper">Mart</span>
 
 </h1>
 
-<div class="mt-4">
-
-<h2 class="text-2xl font-bold">
+<h2 class="text-2xl font-bold mt-4">
 Welcome Back
 </h2>
 
-<p class="text-gray-500 mt-1">
-Login to manage your orders
+<p class="text-gray-500">
+Login to continue
 </p>
-
-</div>
 
 </div>
 
@@ -74,7 +70,7 @@ Login to manage your orders
 <div>
 
 <label class="text-sm font-semibold ml-1">
-Email Address
+Email
 </label>
 
 <input type="email"
@@ -103,7 +99,7 @@ required>
 
 <button
 type="submit"
-class="w-full bg-copper hover:opacity-90 text-white font-bold py-4 rounded-xl transition active:scale-[0.98]">
+class="w-full bg-copper text-white font-bold py-4 rounded-xl hover:opacity-90">
 
 Sign In
 
@@ -119,8 +115,12 @@ Sign In
 <p>
 
 New user?
-<a href="register.html" class="text-tealMain font-bold hover:underline">
-Create an account
+
+<a href="register.html"
+class="text-tealMain font-bold hover:underline">
+
+Create account
+
 </a>
 
 </p>
@@ -128,7 +128,7 @@ Create an account
 
 <div class="pt-6 border-t">
 
-<p class="text-sm text-gray-500 mb-3 font-semibold uppercase tracking-wider">
+<p class="text-sm text-gray-500 mb-3 font-semibold uppercase">
 
 Staff Access
 
@@ -150,9 +150,10 @@ Admin Portal
 </div>
 
 
+
 <script>
 
-document.getElementById('login-form').addEventListener('submit', async (e) => {
+document.getElementById('login-form').addEventListener('submit', async (e)=>{
 
 e.preventDefault();
 
@@ -172,7 +173,9 @@ const res=await fetch('/login',{
 
 method:'POST',
 
-headers:{'Content-Type':'application/json'},
+headers:{
+'Content-Type':'application/json'
+},
 
 body:JSON.stringify({email,password})
 
@@ -180,12 +183,23 @@ body:JSON.stringify({email,password})
 
 const data=await res.json();
 
+
 if(res.ok){
 
-localStorage.setItem("userName",data.userName);
-localStorage.setItem("userEmail",data.userEmail);
+localStorage.setItem("userName",data.user.name);
+localStorage.setItem("userEmail",data.user.email);
+localStorage.setItem("userRole",data.user.role);
+
+
+if(data.user.role==="admin"){
+
+window.location.href="admin.html";
+
+}else{
 
 window.location.href="index.html";
+
+}
 
 }else{
 
@@ -198,9 +212,9 @@ btn.disabled=false;
 
 }catch(err){
 
-console.error("Login Error:",err);
+console.error(err);
 
-alert("Server connection failed!");
+alert("Server connection failed");
 
 btn.innerText=originalText;
 btn.disabled=false;
@@ -210,6 +224,7 @@ btn.disabled=false;
 });
 
 </script>
+
 
 </body>
 </html>

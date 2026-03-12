@@ -9,16 +9,16 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     btn.disabled = true;
     
     try {
-        // ✅ FIXED: Added window.location.origin
-        const res = await fetch(window.location.origin + "/login", {
+        const response = await fetch(API.login, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password }),
+            credentials: "include"
         });
         
-        const data = await res.json();
+        const data = await response.json();
         
-        if (res.ok) {
+        if (response.ok) {
             localStorage.setItem("userId", data.user.id);
             localStorage.setItem("userName", data.user.name);
             localStorage.setItem("userEmail", data.user.email);
@@ -40,9 +40,19 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
             btn.disabled = false;
         }
     } catch (err) {
-        console.error("Login error:", err);
-        showToast("Server connection failed. Please try again.", "error");
+        showToast("Server connection failed", "error");
         btn.innerText = "Login";
         btn.disabled = false;
     }
 });
+
+function showToast(message, type) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.background = type === "success" ? "#059669" : "#dc2626";
+    toast.classList.remove("translate-x-full");
+    
+    setTimeout(() => {
+        toast.classList.add("translate-x-full");
+    }, 3000);
+}

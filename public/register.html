@@ -3,42 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - MedPlus</title>
+    <title>Register - MedPlus Pharmacy</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
-    <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h1 class="text-2xl font-bold text-[#004D4D] mb-6">Create Account</h1>
-            
-            <form id="registerForm">
-                <input type="text" id="name" placeholder="Full Name" required
-                    class="w-full border p-3 rounded mb-3">
-                <input type="email" id="email" placeholder="Email" required
-                    class="w-full border p-3 rounded mb-3">
-                <input type="password" id="password" placeholder="Password" required minlength="6"
-                    class="w-full border p-3 rounded mb-3">
-                <input type="tel" id="phone" placeholder="Phone Number"
-                    class="w-full border p-3 rounded mb-3">
-                <textarea id="address" placeholder="Address" rows="2"
-                    class="w-full border p-3 rounded mb-3"></textarea>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
+        <h1 class="text-2xl font-bold text-emerald-800 mb-6">Create Account</h1>
+        
+        <form id="registerForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" id="name" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                        placeholder="John Doe">
+                </div>
                 
-                <button type="submit" class="w-full bg-[#004D4D] text-white py-3 rounded-lg">
-                    Register
-                </button>
-            </form>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                        placeholder="john@example.com">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" required minlength="6"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                        placeholder="••••••••">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" id="phone"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                        placeholder="9876543210">
+                </div>
+            </div>
             
-            <p class="mt-4 text-center">
-                Already have account? <a href="login.html" class="text-[#004D4D]">Login</a>
-            </p>
-        </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <textarea id="address" rows="3"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    placeholder="Your delivery address"></textarea>
+            </div>
+            
+            <button type="submit" 
+                class="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition">
+                Register
+            </button>
+        </form>
+        
+        <p class="mt-6 text-center text-gray-600">
+            Already have an account? 
+            <a href="login.html" class="text-emerald-700 font-semibold hover:underline">Login</a>
+        </p>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white transform translate-x-full transition-transform duration-300 z-50"></div>
 
     <script>
         document.getElementById("registerForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             
-            const user = {
+            const btn = e.target.querySelector("button");
+            btn.innerText = "Registering...";
+            btn.disabled = true;
+            
+            const userData = {
                 name: document.getElementById("name").value,
                 email: document.getElementById("email").value,
                 password: document.getElementById("password").value,
@@ -46,21 +79,42 @@
                 address: document.getElementById("address").value
             };
             
-            const res = await fetch("/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(user)
-            });
-            
-            const data = await res.json();
-            
-            if (res.ok) {
-                alert("Registration successful! Please login.");
-                window.location.href = "login.html";
-            } else {
-                alert(data.error || "Registration failed");
+            try {
+                const res = await fetch("/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showToast("Registration successful! Please login.", "success");
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 2000);
+                } else {
+                    showToast(data.error || "Registration failed", "error");
+                    btn.innerText = "Register";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showToast("Server connection failed", "error");
+                btn.innerText = "Register";
+                btn.disabled = false;
             }
         });
+
+        function showToast(message, type) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.style.background = type === "success" ? "#059669" : "#dc2626";
+            toast.classList.remove("translate-x-full");
+            
+            setTimeout(() => {
+                toast.classList.add("translate-x-full");
+            }, 3000);
+        }
     </script>
 </body>
 </html>

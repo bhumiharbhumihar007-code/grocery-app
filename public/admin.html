@@ -15,7 +15,7 @@
                 <h1 class="text-xl font-bold">Med<span class="text-yellow-300">Plus</span> Admin</h1>
                 <div class="flex items-center gap-4">
                     <span id="adminNameDisplay" class="font-semibold"></span>
-                    <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                    <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600">
                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                     </button>
                 </div>
@@ -27,185 +27,106 @@
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Revenue</p>
-                        <h3 id="totalRevenue" class="text-2xl font-bold text-emerald-700">₹0</h3>
-                    </div>
-                    <div class="bg-emerald-100 p-3 rounded-lg">
-                        <i class="fas fa-rupee-sign text-emerald-700 text-xl"></i>
-                    </div>
-                </div>
+                <p class="text-gray-500">Total Revenue</p>
+                <p id="totalRevenue" class="text-2xl font-bold text-emerald-700">₹0</p>
             </div>
-            
             <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Orders</p>
-                        <h3 id="totalOrders" class="text-2xl font-bold text-blue-600">0</h3>
-                    </div>
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
-                    </div>
-                </div>
+                <p class="text-gray-500">Total Orders</p>
+                <p id="totalOrders" class="text-2xl font-bold text-blue-600">0</p>
             </div>
-            
             <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">Customers</p>
-                        <h3 id="totalCustomers" class="text-2xl font-bold text-green-600">0</h3>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-lg">
-                        <i class="fas fa-users text-green-600 text-xl"></i>
-                    </div>
-                </div>
+                <p class="text-gray-500">Customers</p>
+                <p id="totalCustomers" class="text-2xl font-bold text-green-600">0</p>
             </div>
-            
             <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">Medicines</p>
-                        <h3 id="totalMedicines" class="text-2xl font-bold text-purple-600">0</h3>
-                    </div>
-                    <div class="bg-purple-100 p-3 rounded-lg">
-                        <i class="fas fa-pills text-purple-600 text-xl"></i>
-                    </div>
-                </div>
+                <p class="text-gray-500">Medicines</p>
+                <p id="totalMedicines" class="text-2xl font-bold text-purple-600">0</p>
             </div>
         </div>
         
         <!-- Add Medicine Form -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold mb-6">Add New Medicine</h2>
+            <h2 class="text-xl font-bold mb-4">Add New Medicine</h2>
             <form id="medicineForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Medicine Name *</label>
-                    <input type="text" id="medName" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Generic Name</label>
-                    <input type="text" id="medGeneric"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
-                    <input type="text" id="medManufacturer"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Price (₹) *</label>
-                    <input type="number" id="medPrice" step="0.01" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                    <select id="medCategory" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
-                        <option value="Pain Relief">Pain Relief</option>
-                        <option value="Antibiotics">Antibiotics</option>
-                        <option value="Vitamins">Vitamins</option>
-                        <option value="Cold & Flu">Cold & Flu</option>
-                        <option value="Allergy">Allergy</option>
-                        <option value="Diabetes">Diabetes</option>
-                        <option value="Heart Care">Heart Care</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                    <input type="number" id="medStock" value="100"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
-                </div>
-                
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                    <input type="url" id="medImage"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600"
-                        placeholder="https://example.com/image.jpg">
-                </div>
-                
-                <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <textarea id="medDesc" rows="2"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600"></textarea>
-                </div>
-                
-                <div class="md:col-span-3">
-                    <button type="submit" 
-                        class="bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition">
-                        <i class="fas fa-plus-circle mr-2"></i>Add Medicine
-                    </button>
-                </div>
+                <input type="text" id="medName" placeholder="Medicine Name" required class="border p-2 rounded">
+                <input type="text" id="medGeneric" placeholder="Generic Name" class="border p-2 rounded">
+                <input type="text" id="medManufacturer" placeholder="Manufacturer" class="border p-2 rounded">
+                <input type="number" id="medPrice" placeholder="Price" required step="0.01" class="border p-2 rounded">
+                <select id="medCategory" required class="border p-2 rounded">
+                    <option value="Pain Relief">Pain Relief</option>
+                    <option value="Antibiotics">Antibiotics</option>
+                    <option value="Vitamins">Vitamins</option>
+                </select>
+                <input type="number" id="medStock" placeholder="Stock" class="border p-2 rounded">
+                <input type="text" id="medImage" placeholder="Image URL" class="border p-2 rounded md:col-span-2">
+                <textarea id="medDesc" placeholder="Description" rows="2" class="border p-2 rounded md:col-span-3"></textarea>
+                <button type="submit" class="bg-emerald-700 text-white py-2 rounded hover:bg-emerald-800 md:col-span-3">
+                    Add Medicine
+                </button>
             </form>
         </div>
         
         <!-- Medicines List -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Medicine Inventory</h2>
+            <h2 class="text-xl font-bold mb-4">Medicines</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Category</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Price</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Stock</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Action</th>
+                            <th class="p-2 text-left">Name</th>
+                            <th class="p-2 text-left">Category</th>
+                            <th class="p-2 text-left">Price</th>
+                            <th class="p-2 text-left">Stock</th>
+                            <th class="p-2 text-left">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="medicinesTable" class="divide-y divide-gray-200"></tbody>
+                    <tbody id="medicinesTable"></tbody>
                 </table>
             </div>
         </div>
         
         <!-- Orders List -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Recent Orders</h2>
+            <h2 class="text-xl font-bold mb-4">Orders</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Order ID</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Customer</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Items</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Total</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Date</th>
+                            <th class="p-2 text-left">Order ID</th>
+                            <th class="p-2 text-left">Customer</th>
+                            <th class="p-2 text-left">Items</th>
+                            <th class="p-2 text-left">Total</th>
+                            <th class="p-2 text-left">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="ordersTable" class="divide-y divide-gray-200"></tbody>
+                    <tbody id="ordersTable"></tbody>
                 </table>
             </div>
         </div>
         
         <!-- Customers List -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Registered Customers</h2>
+            <h2 class="text-xl font-bold mb-4">Customers</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Email</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Phone</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Joined</th>
+                            <th class="p-2 text-left">Name</th>
+                            <th class="p-2 text-left">Email</th>
+                            <th class="p-2 text-left">Phone</th>
+                            <th class="p-2 text-left">Joined</th>
                         </tr>
                     </thead>
-                    <tbody id="customersTable" class="divide-y divide-gray-200"></tbody>
+                    <tbody id="customersTable"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div id="toast" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white transform translate-x-full transition-transform duration-300 z-50"></div>
 
+    <script src="config.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

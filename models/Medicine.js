@@ -3,35 +3,39 @@ const mongoose = require("mongoose");
 const MedicineSchema = new mongoose.Schema({
     name: { 
         type: String, 
-        required: true 
+        required: true,
+        trim: true
     },
     genericName: { 
-        type: String 
+        type: String,
+        trim: true 
     },
     manufacturer: { 
-        type: String 
+        type: String,
+        trim: true 
     },
     price: { 
         type: Number, 
-        required: true 
+        required: true,
+        min: 0
     },
     category: { 
         type: String, 
-        required: true 
+        required: true,
+        enum: ["Pain Relief", "Antibiotics", "Vitamins", "Cold & Flu", "Allergy", "Diabetes", "Heart Care", "Digestive", "Skin Care", "Eye Care", "Others"]
     },
     image: { 
         type: String, 
-        default: "/images/default-medicine.jpg" 
+        default: "https://via.placeholder.com/200x200?text=Medicine" 
     },
     description: { 
-        type: String 
+        type: String,
+        default: ""
     },
     stock: { 
         type: Number, 
-        default: 0 
-    },
-    expiryDate: { 
-        type: Date 
+        default: 0,
+        min: 0
     },
     createdAt: { 
         type: Date, 

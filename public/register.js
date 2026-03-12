@@ -2,7 +2,8 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     e.preventDefault();
     
     const btn = e.target.querySelector("button");
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Registering...';
+    const originalText = btn.innerText;
+    btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 inline" viewBox="0 0 24 24">...</svg>Registering...';
     btn.disabled = true;
     
     const userData = {
@@ -14,16 +15,16 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     };
     
     try {
-        // ✅ FIXED: Added window.location.origin
-        const res = await fetch(window.location.origin + "/register", {
+        const response = await fetch(API.register, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData)
+            body: JSON.stringify(userData),
+            credentials: "include"
         });
         
-        const data = await res.json();
+        const data = await response.json();
         
-        if (res.ok) {
+        if (response.ok) {
             showToast("Registration successful! Please login.", "success");
             document.getElementById("registerForm").reset();
             setTimeout(() => {
@@ -31,11 +32,23 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
             }, 2000);
         } else {
             showToast(data.error || "Registration failed", "error");
-            resetButton(btn, "Register");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
     } catch (err) {
-        console.error("Registration error:", err);
-        showToast("Server connection failed. Please try again.", "error");
-        resetButton(btn, "Register");
+        showToast("Server connection failed", "error");
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 });
+
+function showToast(message, type) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.background = type === "success" ? "#059669" : "#dc2626";
+    toast.classList.remove("translate-x-full");
+    
+    setTimeout(() => {
+        toast.classList.add("translate-x-full");
+    }, 3000);
+}

@@ -64,21 +64,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-app.get("/index.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.get("/admin.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "admin.html"));
-});
-
-app.get("/checkout.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "checkout.html"));
-});
-
-app.get("/register.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "register.html"));
-});
+// ==================== AUTH ROUTES ====================
 
 // Register
 app.post("/register", async (req, res) => {
@@ -146,6 +132,8 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// ==================== MEDICINE ROUTES ====================
+
 // Get all medicines
 app.get("/medicines", async (req, res) => {
     try {
@@ -207,6 +195,8 @@ app.delete("/deleteMedicine/:id", async (req, res) => {
     }
 });
 
+// ==================== ORDER ROUTES ====================
+
 // Place order
 app.post("/order", async (req, res) => {
     try {
@@ -248,12 +238,14 @@ app.patch("/order/:id/status", async (req, res) => {
     }
 });
 
-// Admin data
+// ==================== ADMIN ROUTES ====================
+
+// Get admin data
 app.get("/adminData", async (req, res) => {
     try {
         const [users, orders, medicines] = await Promise.all([
             User.find().select("-password"),
-            Order.find(),
+            Order.find().sort({ createdAt: -1 }),
             Medicine.find()
         ]);
         res.json({ users, orders, medicines });

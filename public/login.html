@@ -4,55 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - MedPlus Pharmacy</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <div class="login-container">
-            <div class="login-left">
-                <h1>Med<span>Plus</span></h1>
-                <p>Your Trusted Online Pharmacy</p>
-                <div class="features">
-                    <div class="feature">
-                        <span>✓</span> 100% Genuine Medicines
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden">
+        <div class="flex flex-col md:flex-row">
+            <!-- Left Side - Branding -->
+            <div class="bg-gradient-to-br from-emerald-800 to-emerald-600 text-white p-8 md:w-1/2 flex flex-col justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Med<span class="text-yellow-300">Plus</span></h1>
+                    <p class="text-emerald-100">Your Trusted Online Pharmacy</p>
+                </div>
+                
+                <div class="space-y-4 mt-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">✓</div>
+                        <span>100% Genuine Medicines</span>
                     </div>
-                    <div class="feature">
-                        <span>✓</span> Free Home Delivery
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">✓</div>
+                        <span>Free Home Delivery</span>
                     </div>
-                    <div class="feature">
-                        <span>✓</span> 24/7 Customer Support
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">✓</div>
+                        <span>24/7 Customer Support</span>
                     </div>
                 </div>
-                <div class="admin-info">
-                    <p>Admin Login:</p>
-                    <p class="admin-creds">admin@medplus.com / admin123</p>
+                
+                <div class="mt-8 p-4 bg-white bg-opacity-10 rounded-lg">
+                    <p class="text-sm text-emerald-100">Demo Credentials:</p>
+                    <p class="font-mono text-xs mt-1">👤 User: user@test.com / user123</p>
+                    <p class="font-mono text-xs">👑 Admin: (from .env file)</p>
                 </div>
             </div>
             
-            <div class="login-right">
-                <h2>Welcome Back</h2>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="email" value="admin@medplus.com" required>
+            <!-- Right Side - Login Form -->
+            <div class="p-8 md:w-1/2">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome Back</h2>
+                
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input type="email" id="email" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                            placeholder="your@email.com">
                     </div>
                     
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="password" value="admin123" required>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="password" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                            placeholder="••••••••">
                     </div>
                     
-                    <button type="submit" class="btn-login">Login</button>
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded text-emerald-600">
+                            <span class="text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-emerald-600 hover:underline">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" 
+                        class="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition">
+                        Login
+                    </button>
                 </form>
                 
-                <p class="register-link">
-                    Don't have account? 
-                    <a href="register.html">Register</a>
-                </p>
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">Don't have an account? 
+                        <a href="register.html" class="text-emerald-700 font-semibold hover:underline">Register</a>
+                    </p>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <p class="text-xs text-gray-500 text-center">
+                        By logging in, you agree to our Terms and Privacy Policy
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-    
-    <script src="login.js"></script>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white transform translate-x-full transition-transform duration-300 z-50"></div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const btn = e.target.querySelector("button");
+            
+            btn.innerText = "Logging in...";
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    // Store user data securely
+                    localStorage.setItem("userId", data.user.id);
+                    localStorage.setItem("userName", data.user.name);
+                    localStorage.setItem("userEmail", data.user.email);
+                    localStorage.setItem("userRole", data.user.role);
+                    localStorage.setItem("isLoggedIn", "true");
+                    
+                    showToast("Login successful! Redirecting...", "success");
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (data.user.role === "admin") {
+                            window.location.href = "admin.html";
+                        } else {
+                            window.location.href = "index.html";
+                        }
+                    }, 1000);
+                } else {
+                    showToast(data.error || "Login failed", "error");
+                    btn.innerText = "Login";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showToast("Server connection failed", "error");
+                btn.innerText = "Login";
+                btn.disabled = false;
+            }
+        });
+
+        function showToast(message, type) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.style.background = type === "success" ? "#059669" : "#dc2626";
+            toast.classList.remove("translate-x-full");
+            
+            setTimeout(() => {
+                toast.classList.add("translate-x-full");
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

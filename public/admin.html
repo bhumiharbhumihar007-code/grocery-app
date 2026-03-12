@@ -9,237 +9,203 @@
 </head>
 <body class="bg-gray-100">
     <!-- Navigation -->
-    <nav class="bg-[#004D4D] text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Med<span class="text-yellow-300">Plus</span> Admin</h1>
-            <div class="flex items-center gap-4">
-                <span id="adminNameDisplay"></span>
-                <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg">Logout</button>
+    <nav class="bg-emerald-800 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <h1 class="text-xl font-bold">Med<span class="text-yellow-300">Plus</span> Admin</h1>
+                <div class="flex items-center gap-4">
+                    <span id="adminNameDisplay" class="font-semibold"></span>
+                    <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
     
-    <div class="container mx-auto p-4">
+    <div class="container mx-auto px-4 py-8">
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Total Revenue</h3>
-                <p id="totalRevenue" class="text-2xl font-bold text-[#004D4D]">₹0</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Revenue</p>
+                        <h3 id="totalRevenue" class="text-2xl font-bold text-emerald-700">₹0</h3>
+                    </div>
+                    <div class="bg-emerald-100 p-3 rounded-lg">
+                        <i class="fas fa-rupee-sign text-emerald-700 text-xl"></i>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Total Orders</h3>
-                <p id="totalOrders" class="text-2xl font-bold text-[#B87333]">0</p>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Orders</p>
+                        <h3 id="totalOrders" class="text-2xl font-bold text-blue-600">0</h3>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Customers</h3>
-                <p id="totalCustomers" class="text-2xl font-bold text-green-600">0</p>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Customers</p>
+                        <h3 id="totalCustomers" class="text-2xl font-bold text-green-600">0</h3>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <i class="fas fa-users text-green-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Medicines</h3>
-                <p id="totalMedicines" class="text-2xl font-bold text-purple-600">0</p>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Medicines</p>
+                        <h3 id="totalMedicines" class="text-2xl font-bold text-purple-600">0</h3>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-lg">
+                        <i class="fas fa-pills text-purple-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
         </div>
         
         <!-- Add Medicine Form -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Add New Medicine</h2>
+            <h2 class="text-xl font-bold mb-6">Add New Medicine</h2>
             <form id="medicineForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input type="text" id="medName" placeholder="Medicine Name" required class="border p-2 rounded">
-                <input type="text" id="medGeneric" placeholder="Generic Name" class="border p-2 rounded">
-                <input type="text" id="medManufacturer" placeholder="Manufacturer" class="border p-2 rounded">
-                <input type="number" id="medPrice" placeholder="Price" required step="0.01" class="border p-2 rounded">
-                <select id="medCategory" required class="border p-2 rounded">
-                    <option value="Pain Relief">Pain Relief</option>
-                    <option value="Antibiotics">Antibiotics</option>
-                    <option value="Vitamins">Vitamins</option>
-                </select>
-                <input type="number" id="medStock" placeholder="Stock" class="border p-2 rounded">
-                <input type="text" id="medImage" placeholder="Image URL" class="border p-2 rounded md:col-span-2">
-                <textarea id="medDesc" placeholder="Description" class="border p-2 rounded md:col-span-3"></textarea>
-                <button type="submit" class="bg-[#004D4D] text-white py-2 rounded hover:bg-[#006666] md:col-span-3">
-                    Add Medicine
-                </button>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Medicine Name *</label>
+                    <input type="text" id="medName" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Generic Name</label>
+                    <input type="text" id="medGeneric"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
+                    <input type="text" id="medManufacturer"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Price (₹) *</label>
+                    <input type="number" id="medPrice" step="0.01" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                    <select id="medCategory" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
+                        <option value="Pain Relief">Pain Relief</option>
+                        <option value="Antibiotics">Antibiotics</option>
+                        <option value="Vitamins">Vitamins</option>
+                        <option value="Cold & Flu">Cold & Flu</option>
+                        <option value="Allergy">Allergy</option>
+                        <option value="Diabetes">Diabetes</option>
+                        <option value="Heart Care">Heart Care</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                    <input type="number" id="medStock" value="100"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                    <input type="url" id="medImage"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600"
+                        placeholder="https://example.com/image.jpg">
+                </div>
+                
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="medDesc" rows="2"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600"></textarea>
+                </div>
+                
+                <div class="md:col-span-3">
+                    <button type="submit" 
+                        class="bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition">
+                        <i class="fas fa-plus-circle mr-2"></i>Add Medicine
+                    </button>
+                </div>
             </form>
         </div>
         
         <!-- Medicines List -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Medicines</h2>
+            <h2 class="text-xl font-bold mb-4">Medicine Inventory</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="p-2 text-left">Name</th>
-                            <th class="p-2 text-left">Category</th>
-                            <th class="p-2 text-left">Price</th>
-                            <th class="p-2 text-left">Stock</th>
-                            <th class="p-2 text-left">Action</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Name</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Category</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Price</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Stock</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="medicinesTable"></tbody>
+                    <tbody id="medicinesTable" class="divide-y divide-gray-200"></tbody>
                 </table>
             </div>
         </div>
         
         <!-- Orders List -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Orders</h2>
+            <h2 class="text-xl font-bold mb-4">Recent Orders</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="p-2 text-left">Order ID</th>
-                            <th class="p-2 text-left">Customer</th>
-                            <th class="p-2 text-left">Items</th>
-                            <th class="p-2 text-left">Total</th>
-                            <th class="p-2 text-left">Status</th>
-                            <th class="p-2 text-left">Action</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Order ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Customer</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Items</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Total</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Date</th>
                         </tr>
                     </thead>
-                    <tbody id="ordersTable"></tbody>
+                    <tbody id="ordersTable" class="divide-y divide-gray-200"></tbody>
                 </table>
             </div>
         </div>
         
         <!-- Customers List -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Customers</h2>
+            <h2 class="text-xl font-bold mb-4">Registered Customers</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="p-2 text-left">Name</th>
-                            <th class="p-2 text-left">Email</th>
-                            <th class="p-2 text-left">Phone</th>
-                            <th class="p-2 text-left">Joined</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Name</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Email</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Phone</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Joined</th>
                         </tr>
                     </thead>
-                    <tbody id="customersTable"></tbody>
+                    <tbody id="customersTable" class="divide-y divide-gray-200"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <script>
-        // Check admin authentication
-        if (localStorage.getItem("userRole") !== "admin") {
-            window.location.href = "login.html";
-        }
-        
-        document.getElementById("adminNameDisplay").textContent = localStorage.getItem("userName") || "Admin";
-        
-        // Load all data
-        loadDashboardData();
-        
-        async function loadDashboardData() {
-            const res = await fetch("/adminData");
-            const data = await res.json();
-            
-            // Update stats
-            const revenue = data.orders.reduce((sum, o) => sum + (o.total || 0), 0);
-            document.getElementById("totalRevenue").textContent = "₹" + revenue.toFixed(2);
-            document.getElementById("totalOrders").textContent = data.orders.length;
-            document.getElementById("totalCustomers").textContent = data.users.filter(u => u.role === "user").length;
-            document.getElementById("totalMedicines").textContent = data.medicines.length;
-            
-            // Show medicines
-            document.getElementById("medicinesTable").innerHTML = data.medicines.map(m => `
-                <tr class="border-b">
-                    <td class="p-2">${m.name}</td>
-                    <td class="p-2">${m.category}</td>
-                    <td class="p-2">₹${m.price}</td>
-                    <td class="p-2">${m.stock}</td>
-                    <td class="p-2">
-                        <button onclick="deleteMedicine('${m._id}')" class="text-red-500">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-            
-            // Show orders
-            document.getElementById("ordersTable").innerHTML = data.orders.map(o => `
-                <tr class="border-b">
-                    <td class="p-2">#${o._id.slice(-6)}</td>
-                    <td class="p-2">${o.userName}</td>
-                    <td class="p-2">${o.items.length} items</td>
-                    <td class="p-2">₹${o.total}</td>
-                    <td class="p-2">
-                        <select onchange="updateStatus('${o._id}', this.value)" class="border p-1 rounded">
-                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                            <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                        </select>
-                    </td>
-                    <td class="p-2">
-                        <button onclick="viewOrder('${o._id}')" class="text-blue-500">View</button>
-                    </td>
-                </tr>
-            `).join('');
-            
-            // Show customers
-            document.getElementById("customersTable").innerHTML = data.users.filter(u => u.role === "user").map(u => `
-                <tr class="border-b">
-                    <td class="p-2">${u.name}</td>
-                    <td class="p-2">${u.email}</td>
-                    <td class="p-2">${u.phone || 'N/A'}</td>
-                    <td class="p-2">${new Date(u.createdAt).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
-        }
-        
-        // Add medicine
-        document.getElementById("medicineForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            
-            const medicine = {
-                name: document.getElementById("medName").value,
-                genericName: document.getElementById("medGeneric").value,
-                manufacturer: document.getElementById("medManufacturer").value,
-                price: parseFloat(document.getElementById("medPrice").value),
-                category: document.getElementById("medCategory").value,
-                stock: parseInt(document.getElementById("medStock").value) || 0,
-                image: document.getElementById("medImage").value,
-                description: document.getElementById("medDesc").value
-            };
-            
-            const res = await fetch("/addMedicine", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(medicine)
-            });
-            
-            if (res.ok) {
-                alert("Medicine added!");
-                e.target.reset();
-                loadDashboardData();
-            }
-        });
-        
-        // Delete medicine
-        async function deleteMedicine(id) {
-            if (confirm("Delete this medicine?")) {
-                await fetch(`/deleteMedicine/${id}`, { method: "DELETE" });
-                loadDashboardData();
-            }
-        }
-        
-        // Update order status
-        async function updateStatus(id, status) {
-            await fetch(`/order/${id}/status`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status })
-            });
-            loadDashboardData();
-        }
-        
-        // Logout
-        function logout() {
-            localStorage.clear();
-            window.location.href = "login.html";
-        }
-    </script>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white transform translate-x-full transition-transform duration-300 z-50"></div>
+
+    <script src="admin.js"></script>
 </body>
 </html>

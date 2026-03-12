@@ -1,4 +1,4 @@
-// config.js - Store all API endpoints
+// API Configuration - Works on both local and Render
 const API = {
     baseUrl: window.location.origin,
     
@@ -10,13 +10,11 @@ const API = {
     
     // Medicine endpoints
     medicines: window.location.origin + "/medicines",
-    medicine: (id) => window.location.origin + `/medicine/${id}`,
     addMedicine: window.location.origin + "/addMedicine",
     deleteMedicine: (id) => window.location.origin + `/deleteMedicine/${id}`,
     
     // Order endpoints
     order: window.location.origin + "/order",
-    myOrders: window.location.origin + "/my-orders",
     updateOrderStatus: (id) => window.location.origin + `/order/${id}/status`,
     
     // Admin endpoints
@@ -28,18 +26,13 @@ async function apiCall(endpoint, method = "GET", data = null) {
     const options = {
         method,
         headers: { "Content-Type": "application/json" },
-        credentials: "include" // Important for sessions
+        credentials: "include"
     };
     
     if (data) {
         options.body = JSON.stringify(data);
     }
     
-    try {
-        const response = await fetch(endpoint, options);
-        return await response.json();
-    } catch (error) {
-        console.error("API Call Error:", error);
-        throw error;
-    }
+    const response = await fetch(endpoint, options);
+    return await response.json();
 }

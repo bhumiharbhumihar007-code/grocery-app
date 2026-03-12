@@ -15,11 +15,16 @@ const OrderItemSchema = new mongoose.Schema({
     },
     quantity: { 
         type: Number, 
-        required: true 
+        required: true,
+        min: 1
     }
 });
 
 const OrderSchema = new mongoose.Schema({
+    userId: {
+        type: String,
+        required: true
+    },
     userName: { 
         type: String, 
         required: true 
@@ -49,6 +54,9 @@ const OrderSchema = new mongoose.Schema({
     createdAt: { 
         type: Date, 
         default: Date.now 
+    },
+    updatedAt: { 
+        type: Date 
     }
 });
 

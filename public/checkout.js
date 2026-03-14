@@ -14,8 +14,11 @@ if (cart.length === 0) {
 document.getElementById("fullName").value = localStorage.getItem("userName") || "";
 document.getElementById("email").value = localStorage.getItem("userEmail") || "";
 
-// Calculate total
-const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+// Calculate totals
+const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+const tax = subtotal * 0.05; // 5% tax
+const delivery = subtotal > 500 ? 0 : 40; // Free delivery over ₹500
+const total = subtotal + tax + delivery;
 
 // Display order items
 const orderItems = document.getElementById("orderItems");
@@ -29,14 +32,19 @@ orderItems.innerHTML = cart.map(item => `
     </div>
 `).join('');
 
-document.getElementById("orderTotal").textContent = total.toFixed(2);
+// Update totals display
+document.getElementById("subtotal").textContent = `₹${subtotal.toFixed(2)}`;
+document.getElementById("tax").textContent = `₹${tax.toFixed(2)}`;
+document.getElementById("delivery").textContent = delivery === 0 ? 'Free' : `₹${delivery.toFixed(2)}`;
+document.getElementById("orderTotal").textContent = `₹${total.toFixed(2)}`;
 
 // Handle form submission
 document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
     const submitBtn = e.target.querySelector("button");
-    submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 inline" viewBox="0 0 24 24">...</svg>Processing...';
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
     submitBtn.disabled = true;
     
     const orderData = {
@@ -45,12 +53,16 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
         userEmail: document.getElementById("email").value,
         userPhone: document.getElementById("phone").value,
         deliveryAddress: document.getElementById("address").value,
+        paymentMethod: document.getElementById("paymentMethod").value,
         items: cart.map(item => ({
             medicineId: item.id,
             name: item.name,
             price: item.price,
             quantity: item.quantity
         })),
+        subtotal: subtotal,
+        tax: tax,
+        delivery: delivery,
         total: total
     };
     
@@ -68,19 +80,24 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
             localStorage.removeItem("cart");
             
             setTimeout(() => {
-                window.location.href = "index.html";
+                window.location.href = "order-confirmation.html?id=" + data.orderId;
             }, 2000);
         } else {
             showToast(data.error || "Order failed", "error");
-            submitBtn.innerHTML = 'Place Order';
+            submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }
     } catch (error) {
         console.error("Order error:", error);
         showToast("Server connection failed", "error");
-        submitBtn.innerHTML = 'Place Order';
+        submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     }
+});
+
+// Phone number formatting
+document.getElementById("phone").addEventListener("input", function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
 });
 
 // Toast notification function
@@ -97,7 +114,10 @@ function showToast(message, type) {
     }, 3000);
 }
 
-// Phone number formatting
-document.getElementById("phone").addEventListener("input", function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
-});
+// Free delivery message
+if (delivery > 0) {
+    const message = document.createElement("div");
+    message.className = "bg-blue-50 text-blue-700 p-3 rounded-lg text-sm mt-4";
+    message.innerHTML = `🚚 Add ₹${(500 - subtotal).toFixed(2)} more for free delivery`;
+    document.querySelector(".bg-white").appendChild(message);
+}

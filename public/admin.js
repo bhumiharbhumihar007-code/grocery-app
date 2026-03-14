@@ -33,6 +33,9 @@ async function loadAdminData() {
         // Display orders
         displayOrders(data.orders);
         
+        // Display customers
+        displayCustomers(data.users);
+        
     } catch (error) {
         showToast("Failed to load data", "error");
     }
@@ -42,21 +45,29 @@ function displayMedicines(medicines) {
     const tbody = document.getElementById("medicinesTable");
     
     if (medicines.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-gray-500">No medicines added yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-3 text-center text-gray-500">No medicines added yet</td></tr>';
         return;
     }
     
     tbody.innerHTML = medicines.map(medicine => `
         <tr>
-            <td class="px-4 py-3">${medicine.name}</td>
+            <td class="px-4 py-3">
+                <img src="${medicine.image || 'https://via.placeholder.com/50x50?text=Med'}" 
+                     alt="${medicine.name}" 
+                     class="w-12 h-12 object-cover rounded">
+            </td>
+            <td class="px-4 py-3 font-medium">${medicine.name}</td>
             <td class="px-4 py-3">${medicine.category}</td>
             <td class="px-4 py-3 font-semibold text-emerald-700">₹${medicine.price}</td>
             <td class="px-4 py-3">
                 <span class="${medicine.stock < 10 ? 'text-red-600 font-semibold' : ''}">${medicine.stock}</span>
             </td>
             <td class="px-4 py-3">
-                <button onclick="deleteMedicine('${medicine._id}')" class="text-red-600 hover:text-red-800">
+                <button onclick="deleteMedicine('${medicine._id}')" class="text-red-600 hover:text-red-800 mr-3">
                     <i class="fas fa-trash"></i>
+                </button>
+                <button onclick="editMedicine('${medicine._id}')" class="text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-edit"></i>
                 </button>
             </td>
         </tr>
@@ -67,7 +78,7 @@ function displayOrders(orders) {
     const tbody = document.getElementById("ordersTable");
     
     if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-gray-500">No orders yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-3 text-center text-gray-500">No orders yet</td></tr>';
         return;
     }
     
@@ -77,6 +88,10 @@ function displayOrders(orders) {
             <td class="px-4 py-3">
                 <div class="font-medium">${order.userName}</div>
                 <div class="text-xs text-gray-500">${order.userEmail}</div>
+            </td>
+            <td class="px-4 py-3">
+                <div>📞 ${order.userPhone}</div>
+                <div class="text-xs text-gray-500">📍 ${order.deliveryAddress?.substring(0, 30)}...</div>
             </td>
             <td class="px-4 py-3">${order.items.length} items</td>
             <td class="px-4 py-3 font-semibold">₹${order.total}</td>
@@ -90,6 +105,27 @@ function displayOrders(orders) {
                     <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                 </select>
             </td>
+            <td class="px-4 py-3 text-sm text-gray-500">${new Date(order.createdAt).toLocaleDateString()}</td>
+        </tr>
+    `).join('');
+}
+
+function displayCustomers(users) {
+    const tbody = document.getElementById("customersTable");
+    const customers = users.filter(u => u.role === "user");
+    
+    if (customers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-gray-500">No customers yet</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = customers.map(user => `
+        <tr>
+            <td class="px-4 py-3 font-medium">${user.name}</td>
+            <td class="px-4 py-3">${user.email}</td>
+            <td class="px-4 py-3">${user.phone || 'N/A'}</td>
+            <td class="px-4 py-3">${user.address || 'N/A'}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">${new Date(user.createdAt).toLocaleDateString()}</td>
         </tr>
     `).join('');
 }
@@ -116,7 +152,7 @@ document.getElementById("medicineForm").addEventListener("submit", async (e) => 
         price: parseFloat(document.getElementById("medPrice").value),
         category: document.getElementById("medCategory").value,
         stock: parseInt(document.getElementById("medStock").value) || 0,
-        image: document.getElementById("medImage").value,
+        image: document.getElementById("medImage").value || "https://via.placeholder.com/200x200?text=Medicine",
         description: document.getElementById("medDesc").value
     };
     
@@ -158,6 +194,11 @@ async function deleteMedicine(id) {
     }
 }
 
+// Edit medicine
+async function editMedicine(id) {
+    alert("Edit feature coming soon!");
+}
+
 // Update order status
 async function updateStatus(id, status) {
     try {
@@ -169,6 +210,7 @@ async function updateStatus(id, status) {
         
         if (response.ok) {
             showToast("Status updated", "success");
+            loadAdminData();
         } else {
             showToast("Failed to update", "error");
         }
@@ -203,3 +245,10 @@ function showToast(message, type) {
         toast.classList.add("translate-x-full");
     }, 3000);
 }
+
+// Auto-refresh data every 30 seconds
+setInterval(() => {
+    if (!document.hidden) {
+        loadAdminData();
+    }
+}, 30000);

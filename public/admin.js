@@ -1,72 +1,111 @@
-// Check admin access
+// Check if user is admin
 if (localStorage.getItem("userRole") !== "admin") {
     window.location.href = "login.html";
 }
 
+// Display admin name
 document.getElementById("adminNameDisplay").textContent = localStorage.getItem("userName") || "Admin";
 
-// Load dashboard data
+// Load all data
 loadAdminData();
 
 async function loadAdminData() {
     try {
-        const data = await apiCall(API.adminData);
+        const response = await fetch("/adminData");
         
-        const revenue = data.orders.reduce((sum, o) => sum + (o.total || 0), 0);
+        if (response.status === 403) {
+            logout();
+            return;
+        }
+        
+        const data = await response.json();
+        
+        // Calculate stats
+        const revenue = data.orders.reduce((sum, order) => sum + (order.total || 0), 0);
         document.getElementById("totalRevenue").textContent = "₹" + revenue.toFixed(2);
         document.getElementById("totalOrders").textContent = data.orders.length;
         document.getElementById("totalCustomers").textContent = data.users.filter(u => u.role === "user").length;
         document.getElementById("totalMedicines").textContent = data.medicines.length;
         
         // Display medicines
-        document.getElementById("medicinesTable").innerHTML = data.medicines.map(m => `
-            <tr class="border-b">
-                <td class="p-2">${m.name}</td>
-                <td class="p-2">${m.category}</td>
-                <td class="p-2">₹${m.price}</td>
-                <td class="p-2">${m.stock}</td>
-                <td class="p-2">
-                    <button onclick="deleteMedicine('${m._id}')" class="text-red-600">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        displayMedicines(data.medicines);
         
         // Display orders
-        document.getElementById("ordersTable").innerHTML = data.orders.map(o => `
-            <tr class="border-b">
-                <td class="p-2">#${o._id.slice(-6)}</td>
-                <td class="p-2">${o.userName}</td>
-                <td class="p-2">${o.items.length} items</td>
-                <td class="p-2">₹${o.total}</td>
-                <td class="p-2">
-                    <select onchange="updateStatus('${o._id}', this.value)" class="border rounded p-1">
-                        <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
-                        <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
-                        <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                        <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                    </select>
-                </td>
-            </tr>
-        `).join('');
+        displayOrders(data.orders);
         
-        // Display customers
-        document.getElementById("customersTable").innerHTML = data.users.filter(u => u.role === "user").map(u => `
-            <tr class="border-b">
-                <td class="p-2">${u.name}</td>
-                <td class="p-2">${u.email}</td>
-                <td class="p-2">${u.phone || 'N/A'}</td>
-                <td class="p-2">${new Date(u.createdAt).toLocaleDateString()}</td>
-            </tr>
-        `).join('');
-        
-    } catch (err) {
+    } catch (error) {
         showToast("Failed to load data", "error");
     }
 }
 
-// Add medicine
+function displayMedicines(medicines) {
+    const tbody = document.getElementById("medicinesTable");
+    
+    if (medicines.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-gray-500">No medicines added yet</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = medicines.map(medicine => `
+        <tr>
+            <td class="px-4 py-3">${medicine.name}</td>
+            <td class="px-4 py-3">${medicine.category}</td>
+            <td class="px-4 py-3 font-semibold text-emerald-700">₹${medicine.price}</td>
+            <td class="px-4 py-3">
+                <span class="${medicine.stock < 10 ? 'text-red-600 font-semibold' : ''}">${medicine.stock}</span>
+            </td>
+            <td class="px-4 py-3">
+                <button onclick="deleteMedicine('${medicine._id}')" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function displayOrders(orders) {
+    const tbody = document.getElementById("ordersTable");
+    
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-gray-500">No orders yet</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = orders.map(order => `
+        <tr>
+            <td class="px-4 py-3 font-mono">#${order._id.slice(-6)}</td>
+            <td class="px-4 py-3">
+                <div class="font-medium">${order.userName}</div>
+                <div class="text-xs text-gray-500">${order.userEmail}</div>
+            </td>
+            <td class="px-4 py-3">${order.items.length} items</td>
+            <td class="px-4 py-3 font-semibold">₹${order.total}</td>
+            <td class="px-4 py-3">
+                <select onchange="updateStatus('${order._id}', this.value)" 
+                    class="border rounded-lg px-2 py-1 text-sm ${getStatusClass(order.status)}">
+                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                    <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function getStatusClass(status) {
+    const classes = {
+        'pending': 'bg-yellow-100 text-yellow-800',
+        'processing': 'bg-blue-100 text-blue-800',
+        'shipped': 'bg-purple-100 text-purple-800',
+        'delivered': 'bg-green-100 text-green-800',
+        'cancelled': 'bg-red-100 text-red-800'
+    };
+    return classes[status] || '';
+}
+
+// Add medicine form
 document.getElementById("medicineForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
@@ -82,48 +121,85 @@ document.getElementById("medicineForm").addEventListener("submit", async (e) => 
     };
     
     try {
-        const data = await apiCall(API.addMedicine, "POST", medicine);
-        showToast("Medicine added!", "success");
-        e.target.reset();
-        loadAdminData();
-    } catch (err) {
-        showToast("Failed to add", "error");
+        const response = await fetch("/addMedicine", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(medicine)
+        });
+        
+        if (response.ok) {
+            showToast("Medicine added successfully!", "success");
+            e.target.reset();
+            loadAdminData();
+        } else {
+            const data = await response.json();
+            showToast(data.error || "Failed to add medicine", "error");
+        }
+    } catch (error) {
+        showToast("Server error", "error");
     }
 });
 
 // Delete medicine
 async function deleteMedicine(id) {
     if (!confirm("Delete this medicine?")) return;
+    
     try {
-        await apiCall(API.deleteMedicine(id), "DELETE");
-        showToast("Medicine deleted", "success");
-        loadAdminData();
-    } catch (err) {
-        showToast("Failed to delete", "error");
+        const response = await fetch(`/deleteMedicine/${id}`, { method: "DELETE" });
+        
+        if (response.ok) {
+            showToast("Medicine deleted", "success");
+            loadAdminData();
+        } else {
+            showToast("Failed to delete", "error");
+        }
+    } catch (error) {
+        showToast("Server error", "error");
     }
 }
 
 // Update order status
 async function updateStatus(id, status) {
     try {
-        await apiCall(API.updateOrderStatus(id), "PATCH", { status });
-        showToast("Status updated", "success");
-    } catch (err) {
-        showToast("Failed to update", "error");
+        const response = await fetch(`/order/${id}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status })
+        });
+        
+        if (response.ok) {
+            showToast("Status updated", "success");
+        } else {
+            showToast("Failed to update", "error");
+        }
+    } catch (error) {
+        showToast("Server error", "error");
     }
 }
 
 // Logout
 async function logout() {
-    await apiCall(API.logout, "POST");
-    localStorage.clear();
-    window.location.href = "login.html";
+    try {
+        await fetch("/logout", { method: "POST" });
+        localStorage.clear();
+        window.location.href = "login.html";
+    } catch (error) {
+        showToast("Logout failed", "error");
+    }
 }
 
+document.getElementById("logoutBtn").addEventListener("click", logout);
+
+// Toast function
 function showToast(message, type) {
     const toast = document.getElementById("toast");
+    if (!toast) return;
+    
     toast.textContent = message;
     toast.style.background = type === "success" ? "#059669" : "#dc2626";
     toast.classList.remove("translate-x-full");
-    setTimeout(() => toast.classList.add("translate-x-full"), 3000);
+    
+    setTimeout(() => {
+        toast.classList.add("translate-x-full");
+    }, 3000);
 }

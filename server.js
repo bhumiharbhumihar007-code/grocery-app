@@ -8,6 +8,10 @@ require("dotenv").config();
 
 const app = express();
 
+const User = require("./models/User");
+const Medicine = require("./models/Medicine");
+const Order = require("./models/Order");
+
 // ==================== MIDDLEWARE ====================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

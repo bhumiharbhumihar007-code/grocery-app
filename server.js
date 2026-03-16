@@ -54,6 +54,7 @@ app.post("/login", async (req, res) => {
       userName: user.name,
       userEmail: user.email,
       role: user.role
+      role:"admin"
     });
   } catch (err) {
     res.status(500).json({ error: "Login failed" });

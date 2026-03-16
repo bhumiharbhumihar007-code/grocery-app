@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/groceryDB")
+mongoose.connect(process.env.MONGO_URI || )
   .then(() => console.log("MongoDB Connected ✅"))
   .catch(err => console.log("Mongo Error:", err));
 
